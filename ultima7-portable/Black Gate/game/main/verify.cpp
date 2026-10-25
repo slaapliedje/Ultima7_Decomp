@@ -191,12 +191,12 @@ void ItemCheck::markChunkLists()
 {
 	int16_t region, y, x;
 	objref cur;
-	objref *prev;
+	le_int16 *prev;
 	for (region = 0; region < 4; region++) {
 		for (y = 0; y < 16; y++) {
 			for (x = 0; x < 16; x++) {
-				prev = (objref *)&ChunkItemLists[region][y][x];
-				cur.off = prev->off;
+				prev = &ChunkItemLists[region][y][x];
+				cur.off = *prev;
 				if (isBadRef(cur) != 0)
 					continue;
 				while (cur.valid()) {
@@ -205,7 +205,7 @@ void ItemCheck::markChunkLists()
 					if (!IS_NPC(ITEM(cur.off))) {
 						markContents(cur);
 					}
-					prev = (objref *)ItemAt(cur.off);
+					prev = &ITEM(cur.off)->next;
 					cur = cur.next();
 				}
 			}
@@ -350,13 +350,13 @@ void ItemCounter::countChunkLists()
 {
 	int16_t region, y, x;
 	objref cur;
-	objref *list;
+	le_int16 *list;
 
 	for (region = 0; region < 4; region++) {
 		for (y = 0; y < 16; y++) {
 			for (x = 0; x < 16; x++) {
-				list = (objref *)&ChunkItemLists[region][y][x];
-				cur.off = list->off;
+				list = &ChunkItemLists[region][y][x];
+				cur.off = *list;
 				while (cur.valid()) {
 					if (countItem(cur, 0) != 0)
 						break;
