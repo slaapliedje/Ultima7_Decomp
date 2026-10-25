@@ -100,7 +100,7 @@ void UC_OnBarge(Value *, Value *ret)
 void UC_GetMusicTrack(Value *, Value *ret)
 {
 	/* The current track in the low byte, the deferred one above it. */
-	ret->appendInt(*(int16_t *)&CurrentMusic);
+	ret->appendInt((int16_t) (CurrentMusic | DeferredMusic << 8));
 }
 
 /* 0x2e: play a track, with a sprite over the item given */

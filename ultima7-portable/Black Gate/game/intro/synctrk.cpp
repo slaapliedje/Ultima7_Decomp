@@ -1,6 +1,7 @@
 /* Black Gate INTRO.EXE, synctrk.c: the cues that move the Guardian's face with his speech. */
 
 #include "u7port.h"
+#include "byteorder.h"
 #include "chkfile.h"
 #include "flex.h"
 #include "oops.h"
@@ -38,6 +39,8 @@ SyncTrack::SyncTrack(char *name)
 	current = 0;
 	loaded = 1;
 	file.read(cues, length);
+	for (int16_t i = 0; i < count; i++)
+		SWAP_LE(cues[i].time);
 }
 
 SyncTrack::SyncTrack(char *flexName, int16_t entry)
@@ -55,6 +58,8 @@ SyncTrack::SyncTrack(char *flexName, int16_t entry)
 	loaded = 1;
 	flex.readEntry(&info, cues, 0);
 	flex.close();
+	for (int16_t i = 0; i < count; i++)
+		SWAP_LE(cues[i].time);
 }
 
 SyncTrack::~SyncTrack()
@@ -67,8 +72,12 @@ void SyncTrack::save(char *name)
 {
 	DataFile file(name, FILE_CREATE);
 
-	for (int16_t i = 0; i < current; i++)
-		file.write(&cues[i], sizeof(SyncCue));
+	for (int16_t i = 0; i < current; i++) {
+		SyncCue cue = cues[i];
+
+		SWAP_LE(cue.time);
+		file.write(&cue, sizeof(SyncCue));
+	}
 }
 
 void SyncTrack::add(uint16_t time, uint8_t value)

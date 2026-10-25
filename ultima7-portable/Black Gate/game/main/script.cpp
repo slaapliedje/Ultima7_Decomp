@@ -23,10 +23,8 @@ void AppendScriptByte(uint8_t *buf, uint8_t c)
 
 void AppendScriptWord(uint8_t *buf, int16_t w)
 {
-	uint8_t *p = (uint8_t *) &w;
-
-	AppendScriptByte(buf, p[0]);
-	AppendScriptByte(buf, p[1]);
+	AppendScriptByte(buf, (uint8_t) w);
+	AppendScriptByte(buf, (uint8_t) ((uint16_t) w >> 8));
 }
 
 /* Packs the arguments, one byte each, up to the SCRIPT_END that ends the list. */

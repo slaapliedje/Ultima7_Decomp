@@ -36,14 +36,14 @@ extern Coord Item_getY(objref &);
 
 inline void SetItemTypeBits(objref *ref, int16_t type)
 {
-	uint16_t &bits = ITEM(*ref)->typeFrame;
+	le_uint16 &bits = ITEM(*ref)->typeFrame;
 
 	bits = (type & 0x3ff) | (bits & 0xfc00);
 }
 
 inline void SetItemFrameBits(objref *ref, int16_t frame)
 {
-	uint16_t &bits = ITEM(*ref)->typeFrame;
+	le_uint16 &bits = ITEM(*ref)->typeFrame;
 
 	bits = (bits & 0x83ff) | ((frame << 10) & 0x7c00);
 }

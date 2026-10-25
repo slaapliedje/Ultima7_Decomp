@@ -43,8 +43,10 @@ uint8_t VoodooFlex::getEntry(int16_t n, FlexEntry *e)
 	if (n >= hdr.count) {
 		e->size = 0;
 		e->offset = 0;
-	} else
+	} else {
 		CopyLinearToFar(e, addr + n * sizeof(FlexEntry) + sizeof(FlexHeader), sizeof(FlexEntry));
+		e->swap();
+	}
 	return !e->empty();
 }
 

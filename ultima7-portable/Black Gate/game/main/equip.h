@@ -1,6 +1,8 @@
 #ifndef EQUIP_H
 #define EQUIP_H
 
+#include "byteorder.h"
+
 #include "lowlevel.h"
 #include "makemojo.h"
 
@@ -22,6 +24,13 @@ struct ItemId;
 
 struct EquipmentList;
 
+/* A list is 10 six-byte entries, each a 16-bit type and four bytes. */
+static inline void SwapEquipmentList(void *list)
+{
+	for (int i = 0; i < 10; i++)
+		SwapLE16Array((uint8_t *) list + i * 6, 1);
+}
+
 /* Creature equipment lists: 60-byte records in voodoo memory, the last one read kept in current. */
 struct EquipTable {
 	int32_t base;
@@ -34,6 +43,7 @@ struct EquipTable {
 		CheckMojoBounds(count, n);
 		if (n != cached) {
 			CopyLinearToFar(current, base + n * 60, 60);
+			SwapEquipmentList(current);
 			cached = n;
 		}
 		return (EquipmentList *)current;
@@ -42,6 +52,7 @@ struct EquipTable {
 	{
 		CheckMojoBounds(count, n);
 		CopyLinearToFar(record, base + n * 60, 60);
+		SwapEquipmentList(record);
 	}
 };
 

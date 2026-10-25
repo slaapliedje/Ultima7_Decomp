@@ -164,8 +164,8 @@ uint8_t WorldGump::accepts(objref dragged, int16_t x, int16_t y)
 		&& !CanStackWith(&target, dragged)) {
 		int16_t unusedType = TYPE(target);
 		int16_t rise = (uint8_t) (Item_getZ(&target) + gItemTypeInfo[TYPE(target)].height) * 4;
-		int16_t w = GetFootprintX(*(TypeFrame *)&target.ptr()->typeFrame);
-		int16_t h = GetFootprintY(*(TypeFrame *)&target.ptr()->typeFrame);
+		int16_t w = GetFootprintX(TypeFrame(target.ptr()->typeFrame));
+		int16_t h = GetFootprintY(TypeFrame(target.ptr()->typeFrame));
 		int16_t tx, ty;
 
 		WorldCoordsToScreen(Item_getX(target), Item_getY(target), &tx, &ty);

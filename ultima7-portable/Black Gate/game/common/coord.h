@@ -1,6 +1,8 @@
 #ifndef COORD_H
 #define COORD_H
 
+#include "byteorder.h"
+
 /* The world is 3072 cells square and wraps at its edges. */
 #define WORLD_SIZE  3072
 
@@ -55,6 +57,7 @@ struct Loc {
 /* A coord argument: an int wraps in place, a coord or loc is copied. */
 struct CellCoord : Coord {
 	CellCoord(int32_t n) { value = n; value = (value + WORLD_SIZE) % WORLD_SIZE; }
+	CellCoord(le_int16 n) : CellCoord((int32_t) (int16_t) n) {}
 	CellCoord(const Coord &c) { value = c.value; }
 	CellCoord(const Loc &l) { value = l.value; }
 };

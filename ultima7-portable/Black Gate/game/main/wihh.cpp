@@ -4,6 +4,7 @@
  */
 
 #include "u7port.h"
+#include "byteorder.h"
 #include <new>
 #include <stdlib.h>
 #include "plat.h"
@@ -267,7 +268,7 @@ void CopyWihhEntry(uint16_t type, uint16_t source)
 		ReportFileNotFound(BuildPath(StaticPath, WihhFileName, 0));
 	ReadFileBlock(fd, (int32_t)(source * 2), INT32_C(2), &offset);
 	DosClose(fd);
-	PokeWord(WihhTable.address + type * 2, offset);
+	PokeWord(WihhTable.address + type * 2, LE16(offset));
 }
 
 extern "C" void ResetWihhGlobals(void)

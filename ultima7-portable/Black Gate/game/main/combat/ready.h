@@ -1,6 +1,8 @@
 #ifndef READY_H
 #define READY_H
 
+#include "byteorder.h"
+
 #include "lowlevel.h"
 #include "makemojo.h"
 #include "voolook.h"
@@ -8,8 +10,10 @@
 /* One READY.DAT record: where a type is worn or held. */
 struct ReadyRecord {
 	int16_t type;
-	uint8_t spell : 1, unusedBits : 2, slot : 5;
+	U7_BITS(uint8_t, spell : 1, unusedBits : 2, slot : 5);
 	char unusedTail[6];
+	/* Between the file's little-endian order and the host's. */
+	void swap() { SWAP_LE(type); }
 };
 static_assert(sizeof(ReadyRecord) == 9, "ReadyRecord is read from a 9-byte file record");
 
@@ -25,6 +29,7 @@ struct ReadyTable {
 		CheckMojoBounds(count, n);
 		if (n != cached) {
 			CopyLinearToFar(current, base + n * 9, 9);
+			((ReadyRecord *) current)->swap();
 			cached = n;
 		}
 		return (ReadyRecord *)current;
@@ -33,6 +38,7 @@ struct ReadyTable {
 	{
 		CheckMojoBounds(count, n);
 		CopyLinearToFar(record, base + n * 9, 9);
+		((ReadyRecord *) record)->swap();
 	}
 };
 

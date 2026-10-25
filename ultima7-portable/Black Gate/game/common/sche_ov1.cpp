@@ -49,9 +49,11 @@ uint8_t Schedule_read(Schedules *s, char *name)
 	if (fd == -1)
 		return 0;
 	DosRead(fd, -INT32_C(1), sizeof n, &n);
+	SWAP_LE(n);
 	if (!Schedule_resize(s, n))
 		return 0;
 	DosRead(fd, -INT32_C(1), (n + 1) * sizeof(uint16_t), s->index);
+	SwapLE16Array(s->index, n + 1);
 	DosRead(fd, -INT32_C(1), MAX_SCHEDULE_ENTRIES * sizeof(ScheduleEntry), s->entries);
 	DosClose(fd);
 	size = GetFileSize(name);
@@ -70,9 +72,15 @@ uint8_t Schedule_write(Schedules *s, char *name)
 	fd = DosCreate(name);
 	if (fd == -1)
 		return 0;
-	DosWrite(fd, INT32_C(0), sizeof s->count, &s->count);
+	uint16_t count = LE16(s->count);
+	uint16_t entries = s->index[s->count];
+
+	DosWrite(fd, INT32_C(0), sizeof count, &count);
+	/* the index goes out little-endian, and back */
+	SwapLE16Array(s->index, s->count + 1);
 	DosWrite(fd, -INT32_C(1), (s->count + 1) * sizeof(uint16_t), s->index);
-	DosWrite(fd, -INT32_C(1), s->index[s->count] * sizeof(ScheduleEntry), s->entries);
+	SwapLE16Array(s->index, s->count + 1);
+	DosWrite(fd, -INT32_C(1), entries * sizeof(ScheduleEntry), s->entries);
 	DosClose(fd);
 	return 1;
 }

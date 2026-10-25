@@ -1,6 +1,8 @@
 #ifndef CHKFILE_H
 #define CHKFILE_H
 
+#include "byteorder.h"
+
 /* How open() reaches the file; byte-sized where built with -b-. */
 enum FileMode { FILE_CREATE, FILE_OPEN };
 
@@ -33,7 +35,7 @@ struct DataFile {
 	int8_t readRecords(uint32_t count, char *buf, uint32_t size);
 	void writeByte(int8_t value);
 	int16_t write(void *buf, int32_t size);
-	void writeWord(int16_t n) { write(&n, INT32_C(2)); }
+	void writeWord(int16_t n) { uint16_t le = LE16((uint16_t) n); write(&le, INT32_C(2)); }
 	void writeRecords(uint32_t count, char *buf, uint32_t size);
 	void copyFrom(DataFile *source, uint32_t count);
 };

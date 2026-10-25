@@ -1,11 +1,15 @@
 #ifndef TYPEFRAM_H
 #define TYPEFRAM_H
 
+#include "byteorder.h"
+
 /* A type in the low ten bits, a frame in the next five, and a flip flag in the top bit. */
 struct TypeFrame {
 	uint16_t bits;
 	TypeFrame() {}
 	TypeFrame(uint16_t n) { bits = n; }
+	TypeFrame(le_uint16 n) { bits = n; }
+	TypeFrame(le_int16 n) { bits = (uint16_t) (int16_t) n; }
 	TypeFrame(uint16_t type, uint16_t frame) { bits = (type & 0x3ff) | ((frame << 10) & 0x7c00); }
 	uint16_t type() { return bits & 0x3ff; }
 	uint16_t frame() { return (bits & 0x7c00) >> 10; }

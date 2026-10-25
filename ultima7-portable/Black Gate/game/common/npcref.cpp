@@ -4,6 +4,7 @@
  */
 
 #include "u7port.h"
+#include "byteorder.h"
 #include "lowlevel.h"
 #include "typefram.h"
 #include "item.h"
@@ -39,7 +40,7 @@
 
 /* an NPC's extra record: its number sits where other items keep flags */
 struct NpcExtra {
-	int16_t contents;
+	le_int16 contents;
 	uint8_t region, quality;
 	uint8_t npcNumber;
 };
@@ -369,7 +370,7 @@ void Npc_getTargetCoords(objref *ref, int16_t *x, int16_t *y, int16_t *z)
 		d = GetNpcBufferForIbo(ref)->scheduleFlags >> 12 & 0xf;
 		*z = d;
 	} else {
-		objref target = GetNpcBufferForIbo(ref)->schedulePosition;
+		objref target = (int16_t) GetNpcBufferForIbo(ref)->schedulePosition;
 
 		*x = Item_getX(target);
 		*y = Item_getY(target);

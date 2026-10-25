@@ -26,14 +26,14 @@ uint8_t *ItemBufferBase = 0;
 int16_t ItemFreeList = 0;
 objref DetachedItems;
 int16_t ItemFreeCount = 0;
-int16_t OffMapItemLink;
-int16_t ChunkItemLists[4][16][16];
+le_int16 OffMapItemLink;
+le_int16 ChunkItemLists[4][16][16];
 int16_t UnusedItemGlobal;
 
 #define TYPE(rec) ((rec)->typeFrame & 0x3ff)
 #define TYPE_CLASS(rec) (gItemTypeInfo[TYPE(rec)].typeClass)
 #define CLASS_FLAGS(rec) (ItemTypeClassFlags[TYPE_CLASS(rec)])
-#define RECORD_KIND(rec) (*(uint8_t *)&ItemTypeClassFlags[TYPE_CLASS(rec)] & CLASS_RECORDS)
+#define RECORD_KIND(rec) ((uint8_t) ItemTypeClassFlags[TYPE_CLASS(rec)] & CLASS_RECORDS)
 #define TYPE_FLAGS(ref) CLASS_FLAGS(ITEM((ref)->off))
 #define IS_VALID(ref) ((int8_t)((ref) != 0))
 #define IS_CLASS(rec, n) ((uint8_t)(TYPE_CLASS(rec) == (n)))
@@ -86,7 +86,7 @@ inline uint8_t DirectionTo(objref &item, objref other, uint8_t cardinal)
 
 void Item_setFrame(objref *ref, int16_t frame)
 {
-	uint16_t &typeFrame = ITEM(ref->off)->typeFrame;
+	le_uint16 &typeFrame = ITEM(ref->off)->typeFrame;
 
 	typeFrame = (typeFrame & 0x83ff) | ((frame << 10) & 0x7c00);
 }
@@ -576,9 +576,9 @@ uint8_t CreateItemInContainer(objref *ref, TypeFrame type, objref container)
 	return 0;
 }
 
-int16_t * Item_findLink(objref *ref)
+le_int16 * Item_findLink(objref *ref)
 {
-	int16_t *link = 0;
+	le_int16 *link = 0;
 	uint8_t kind;
 	int16_t x, y;
 
@@ -705,10 +705,10 @@ void FreeItemRecord(objref *ref)
 {
 	int16_t *record = (int16_t *)ITEM(ref->off);
 
-	*record = ItemFreeList;
-	*++record = 0;
-	*++record = 0;
-	*++record = 0;
+	ITEM(ref->off)->next = ItemFreeList;   /* the record's first word */
+	record[1] = 0;
+	record[2] = 0;
+	record[3] = 0;
 	ItemFreeList = ref->off;
 	ItemFreeCount++;
 }
@@ -848,7 +848,7 @@ uint8_t Item_moveIntoContainer(objref *ref, objref container)
 
 uint8_t Item_detach(objref *ref)
 {
-	int16_t *link;
+	le_int16 *link;
 	uint8_t notify;
 	int16_t kind;
 
@@ -899,7 +899,7 @@ uint8_t CreateItem(objref *ref, TypeFrame frame)
 
 uint8_t PlaceItemDirect(objref *ref, Loc x, Loc y, int16_t z)
 {
-	int16_t *head;
+	le_int16 *head;
 	int16_t chunkX, chunkY, regionIndex;
 
 	ref->off = DetachedItems.off;

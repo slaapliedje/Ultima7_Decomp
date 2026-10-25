@@ -3,6 +3,7 @@
  */
 
 #include "u7port.h"
+#include "byteorder.h"
 #include "itemrec.h"
 #include "iteminfo.h"
 #include "type.h"
@@ -77,7 +78,7 @@ struct NpcView : ViewRecord {
 };
 
 extern objref DetachedItems;
-extern int16_t ChunkItemLists[4][16][16];
+extern le_int16 ChunkItemLists[4][16][16];
 
 extern int16_t FindRegionSlot(Loc, Loc);
 extern Coord Item_getX(objref &);

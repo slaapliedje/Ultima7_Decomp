@@ -17,14 +17,19 @@ void FlexSpans::alloc(int16_t bytes)
 		ReportOutOfVoodooMemory();
 }
 
+/* The table keeps the file's little-endian entries; get and put convert. */
 void FlexSpans::get(uint16_t i, void *dst)
 {
 	CopyLinearToFar(dst, block + i * sizeof(FlexEntry), sizeof(FlexEntry));
+	((FlexEntry *) dst)->swap();
 }
 
 void FlexSpans::put(uint16_t i, void *src)
 {
-	CopyFarToLinear(block + i * sizeof(FlexEntry), src, sizeof(FlexEntry));
+	FlexEntry image = *(FlexEntry *) src;
+
+	image.swap();
+	CopyFarToLinear(block + i * sizeof(FlexEntry), &image, sizeof(FlexEntry));
 }
 
 uint8_t CachedFlex::getEntry(int16_t i, FlexEntry *entry)

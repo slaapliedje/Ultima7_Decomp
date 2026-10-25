@@ -64,7 +64,7 @@ inline void ToggleItemFlags(objref &ref, uint8_t mask)
 
 inline void SetFrameBits(objref &ref, int16_t frame)
 {
-	uint16_t &value = ref.ptr()->typeFrame;
+	le_uint16 &value = ref.ptr()->typeFrame;
 
 	value = (value & 0x3ff) | ((frame << 10) & 0xfc00);
 }

@@ -4,6 +4,7 @@
  */
 
 #include "u7port.h"
+#include "byteorder.h"
 #include "objref.h"
 #include "itemrec.h"
 #include "memapi.h"
@@ -59,7 +60,7 @@ struct ItemCounter {
 
 extern int16_t ItemFreeList;
 extern objref DetachedItems;
-extern int16_t ChunkItemLists[4][16][16];
+extern le_int16 ChunkItemLists[4][16][16];
 extern int16_t ItemFreeCount;
 extern objref GetContainedItem(objref *);
 extern int16_t Item_getExtraRecord(objref *);
@@ -93,7 +94,7 @@ void ItemCheck::clear()
 
 void ItemCheck::markFreeList()
 {
-	int16_t *unusedPrev;
+	void *unusedPrev;            /* written, never read */
 	objref cur = ItemFreeList;
 	int16_t count;
 	uint16_t i;
@@ -172,7 +173,7 @@ int8_t ItemCheck::markItem(objref r)
 void ItemCheck::markContents(objref r)
 {
 	objref cur;
-	int16_t *unusedPrev;
+	void *unusedPrev;            /* written, never read */
 	unusedPrev = (int16_t *)ItemAt(Item_getExtraRecord((objref *)&r));
 	cur = GetContainedItem((objref *)&r);
 	while (cur.valid()) {
@@ -232,7 +233,7 @@ void ItemCheck::markNpcs()
 
 void ItemCheck::markDetached()
 {
-	int16_t *unusedPrev;
+	void *unusedPrev;            /* written, never read */
 	objref cur = DetachedItems;
 	int16_t i;
 	if (isBadRef(cur) != 0)

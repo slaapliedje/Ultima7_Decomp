@@ -1,12 +1,13 @@
 #ifndef SCHE_H
 #define SCHE_H
 
+#include "byteorder.h"
+
 struct Coord;
 
 /* one entry: from time on, the NPC does type at x, y of region */
 struct ScheduleEntry {
-	uint8_t time:3;
-	uint8_t type:5;
+	U7_BITS(uint8_t, time:3, type:5);
 	uint8_t x;
 	uint8_t y;
 	uint8_t region;

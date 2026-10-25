@@ -35,6 +35,7 @@ void AmmoTable::load(char *name)
 	record.family = -1;
 	record.projectile = -1;
 	CheckMojoBounds(count, INT32_C(0));
+	record.swap();
 	CopyFarToLinear(base, &record, INT32_C(13));
 	if (!ReadMojo(fd, -INT32_C(1), INT32_C(1), AmmoCount, count, base, INT32_C(13)))
 		ReportError(0xe302);

@@ -1,6 +1,8 @@
 #ifndef TYPE_H
 #define TYPE_H
 
+#include "byteorder.h"
+
 #ifdef __cplusplus
 #include "objref.h"
 #endif
@@ -9,9 +11,9 @@
  * uint8_t: on a wider type, the Microsoft layout (Windows) starts a new unit where GCC and clang
  * elsewhere pack on, and the record grows. */
 struct TypeInfo {
-	uint8_t hasSfx:1, strangeMovement:1, animated:1, solid:1, water:1, height:3;
-	uint8_t typeClass:4, field:1, door:1, bargePart:1, transparent:1;
-	uint8_t footprintX:3, footprintY:3, light:1, translucent:1;
+	U7_BITS(uint8_t, hasSfx:1, strangeMovement:1, animated:1, solid:1, water:1, height:3);
+	U7_BITS(uint8_t, typeClass:4, field:1, door:1, bargePart:1, transparent:1);
+	U7_BITS(uint8_t, footprintX:3, footprintY:3, light:1, translucent:1);
 };
 #ifdef __cplusplus
 static_assert(sizeof(TypeInfo) == 3, "TypeInfo is read from a 3-byte file record");

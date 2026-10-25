@@ -4,6 +4,7 @@
  */
 
 #include "u7port.h"
+#include "byteorder.h"
 #include <stdio.h>
 #include <string.h>
 #include "dosio.h"
@@ -142,6 +143,7 @@ void LoadRegionMap(uint8_t *region, void *buf)
 		ReportInvalidSaveGame();
 	else {
 		DosRead(fd, (int32_t) *region << 9, INT32_C(512), buf);
+		SwapLE16Array(buf, 256);
 		DosClose(fd);
 	}
 }

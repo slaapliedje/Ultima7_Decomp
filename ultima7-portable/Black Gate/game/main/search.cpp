@@ -76,20 +76,20 @@ int8_t FindItemInContainer(AreaSearch *search, objref container, int16_t flags, 
 int16_t StepContainerSearch(AreaSearch *search)
 {
 	if ((search->flags & 0x100) || search->firstStep != 0) {
-		search->current.off = *(int16_t *) ITEM(search->current.off);
+		search->current.off = ITEM(search->current.off)->next;
 	} else {
 		int16_t current = search->current.off;
 		objref child = GetContainedItem(&search->current);
 
 		search->current.off = child.off;
 		if (!IS_VALID(search->current.off))
-			search->current.off = *(int16_t *) ITEM(current);
+			search->current.off = ITEM(current)->next;
 		while (!IS_VALID(search->current.off) && IsContained((objref *)&current) &&
 			Item_getContainer((objref *)&current) != search->container.off) {
 			objref outer = Item_getContainer((objref *)&current);
 
 			current = outer.off;
-			search->current.off = *(int16_t *) ITEM(current);
+			search->current.off = ITEM(current)->next;
 		}
 	}
 	search->firstStep = 0;

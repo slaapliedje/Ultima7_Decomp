@@ -97,7 +97,7 @@ void UC_Interpret(UsecodeRoutine *code, ValueStack *stack, CallStack *calls, cha
 				DebugPrintf("Null routine detected %d", id);
 				goto abort;
 			case OP_PUSH_EVENT:
-				PUSH_INT(CurrentEvent.word);
+				PUSH_INT(CurrentEvent.id);  /* .word on the PC: the high byte is always 0 */
 				break;
 			case OP_PUSH_ITEM:
 				PUSH_INT(item);

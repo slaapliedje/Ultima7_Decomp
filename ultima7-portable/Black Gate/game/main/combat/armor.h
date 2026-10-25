@@ -1,11 +1,15 @@
 #ifndef ARMOR_H
 #define ARMOR_H
 
+#include "byteorder.h"
+
 #include "lowlevel.h"
 #include "makemojo.h"
 
 struct ArmorRecord;
 struct ShapeLookup;
+
+/* Every armour record starts with its 16-bit type; the rest is bytes. */
 
 /* Armor records: 10-byte records in voodoo memory, the last one read kept in current. */
 struct ArmorTable {
@@ -19,6 +23,7 @@ struct ArmorTable {
 		CheckMojoBounds(count, n);
 		if (n != cached) {
 			CopyLinearToFar(current, base + n * 10, 10);
+			SwapLE16Array(current, 1);
 			cached = n;
 		}
 		return (ArmorRecord *)current;
@@ -27,6 +32,7 @@ struct ArmorTable {
 	{
 		CheckMojoBounds(count, n);
 		CopyLinearToFar(record, base + n * 10, 10);
+		SwapLE16Array(record, 1);
 	}
 };
 

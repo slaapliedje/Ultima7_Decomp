@@ -39,6 +39,7 @@ void MonsterTable::load(char *name)
 	record.alignment = 0;
 	record.category = 3;
 	CheckMojoBounds(count, INT32_C(0));
+	record.swap();
 	CopyFarToLinear(base, &record, INT32_C(25));
 	if (!ReadMojo(fd, -INT32_C(1), INT32_C(1), MonsterCount, count, base, INT32_C(25)))
 		ReportFileNotFound(name);

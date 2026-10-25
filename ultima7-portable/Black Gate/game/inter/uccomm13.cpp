@@ -18,7 +18,7 @@
 
 inline void SetItemType(objref *r, int16_t type)
 {
-	uint16_t &f = ITEM(r->off)->typeFrame;
+	le_uint16 &f = ITEM(r->off)->typeFrame;
 	f = (type & 0x3ff) | (f & 0xfc00);
 }
 

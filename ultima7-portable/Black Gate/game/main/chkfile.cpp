@@ -4,6 +4,7 @@
  */
 
 #include "u7port.h"
+#include "byteorder.h"
 #include <string.h>
 #include "init.h"
 #include "oops.h"
@@ -151,7 +152,7 @@ int16_t DataFile::readWord()
 	int16_t v;
 
 	read(&v, sizeof v);
-	return v;
+	return (int16_t) LE16((uint16_t) v);
 }
 
 int32_t DataFile::readLong()
@@ -159,7 +160,7 @@ int32_t DataFile::readLong()
 	int32_t v;
 
 	read(&v, sizeof v);
-	return v;
+	return (int32_t) LE32((uint32_t) v);
 }
 
 /* reads up to limit bytes into buf, stopping before the byte stop */

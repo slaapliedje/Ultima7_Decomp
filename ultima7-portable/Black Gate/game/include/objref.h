@@ -1,6 +1,8 @@
 #ifndef OBJREF_H
 #define OBJREF_H
 
+#include "byteorder.h"
+
 
 /* far, so its members take a far this. */
 struct ItemRecord;
@@ -23,9 +25,11 @@ struct objref {
 	int16_t off;
 	objref() {}
 	objref(int16_t n) { off = n; }
+	objref(le_int16 n) { off = n; }
 	objref(ItemId id) { off = id.off; }
 	objref &operator=(const objref &other) { off = other.off; return *this; }
 	objref &operator=(int16_t n) { off = n; return *this; }
+	objref &operator=(le_int16 n) { off = n; return *this; }
 	operator int16_t() { return off; }
 	operator ItemId() { ItemId id; id.off = off; return id; }
 	uint8_t operator==(objref other) { return off == other.off; }
