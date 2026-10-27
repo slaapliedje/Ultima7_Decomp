@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <string.h>
 
 #if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
 #define U7_BIG_ENDIAN 1
@@ -28,31 +29,34 @@ static inline uint32_t SwapBytes32(uint32_t v)
 static inline uint16_t LE16(uint16_t v) { return U7_BIG_ENDIAN ? SwapBytes16(v) : v; }
 static inline uint32_t LE32(uint32_t v) { return U7_BIG_ENDIAN ? SwapBytes32(v) : v; }
 
-/* Little-endian values at any address. */
+/* Little-endian values at any address. memcpy lets a compiler that knows the host reads
+ * unaligned words do one load or store and a byte swap. */
 static inline uint16_t LoadLE16(const void *p)
 {
-	const uint8_t *b = (const uint8_t *) p;
+	uint16_t v;
 
-	return (uint16_t) (b[0] | b[1] << 8);
+	memcpy(&v, p, sizeof v);
+	return LE16(v);
 }
 
 static inline uint32_t LoadLE32(const void *p)
 {
-	return (uint32_t) LoadLE16(p) | (uint32_t) LoadLE16((const uint8_t *) p + 2) << 16;
+	uint32_t v;
+
+	memcpy(&v, p, sizeof v);
+	return LE32(v);
 }
 
 static inline void StoreLE16(void *p, uint16_t v)
 {
-	uint8_t *b = (uint8_t *) p;
-
-	b[0] = (uint8_t) v;
-	b[1] = (uint8_t) (v >> 8);
+	v = LE16(v);
+	memcpy(p, &v, sizeof v);
 }
 
 static inline void StoreLE32(void *p, uint32_t v)
 {
-	StoreLE16(p, (uint16_t) v);
-	StoreLE16((uint8_t *) p + 2, (uint16_t) (v >> 16));
+	v = LE32(v);
+	memcpy(p, &v, sizeof v);
 }
 
 static inline uint32_t SwapLESized(uint32_t v, size_t size)

@@ -5,6 +5,8 @@
 #ifndef ARENA_H
 #define ARENA_H
 
+#include "byteorder.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -32,13 +34,10 @@ extern uint32_t ExtendedArea, ExtendedAreaSize;
 #define LINEAR(address) (LinearBase + (uint32_t)(address))
 
 static inline uint8_t LinearGet8(int32_t a) { return LINEAR(a)[0]; }
-static inline uint16_t LinearGet16(int32_t a) { return (uint16_t)(LINEAR(a)[0] | LINEAR(a)[1] << 8); }
-static inline uint32_t LinearGet32(int32_t a)
-{
-	return (uint32_t)LinearGet16(a) | (uint32_t)LinearGet16(a + 2) << 16;
-}
+static inline uint16_t LinearGet16(int32_t a) { return LoadLE16(LINEAR(a)); }
+static inline uint32_t LinearGet32(int32_t a) { return LoadLE32(LINEAR(a)); }
 static inline void LinearPut8(int32_t a, uint8_t v) { LINEAR(a)[0] = v; }
-static inline void LinearPut16(int32_t a, uint16_t v) { LINEAR(a)[0] = (uint8_t)v; LINEAR(a)[1] = (uint8_t)(v >> 8); }
-static inline void LinearPut32(int32_t a, uint32_t v) { LinearPut16(a, (uint16_t)v); LinearPut16(a + 2, (uint16_t)(v >> 16)); }
+static inline void LinearPut16(int32_t a, uint16_t v) { StoreLE16(LINEAR(a), v); }
+static inline void LinearPut32(int32_t a, uint32_t v) { StoreLE32(LINEAR(a), v); }
 
 #endif
