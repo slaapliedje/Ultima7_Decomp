@@ -167,6 +167,12 @@ static NO_LIBCALLS void DrawSpans(const struct View *view, int16_t x, int16_t y,
 	}
 }
 
+#ifdef U7_SHAPE_SPANS_68K
+/* The Atari backend's 68030 version of DrawSpans<SHAPE_COPY, false>, the most used. */
+extern "C" void shape_spans_copy(const uint8_t *source, int32_t x, int32_t y, const int16_t clip[4],
+	const uint8_t *rowTable, uint8_t *linearBase);
+#endif
+
 void DrawShapeFrame(struct View *view, int16_t x, int16_t y, int32_t shape, int16_t frameNum,
 	bool flipped, enum ShapePixelMode mode, int32_t table)
 {
@@ -182,7 +188,11 @@ void DrawShapeFrame(struct View *view, int16_t x, int16_t y, int32_t shape, int1
 		if (flipped)
 			DrawSpans<SHAPE_COPY, true>(view, x, y, source, tableBytes);
 		else
+#ifdef U7_SHAPE_SPANS_68K
+			shape_spans_copy(source, x, y, &view->clip.x0, LINEAR(view->rowTable), LinearBase);
+#else
 			DrawSpans<SHAPE_COPY, false>(view, x, y, source, tableBytes);
+#endif
 		break;
 	case SHAPE_TRANSLATE:
 		if (flipped)

@@ -16,12 +16,15 @@ int16_t FlatModeFlags = 0;
 /* Copy an 8x8 tile to the viewport at tile column x and tile row y. */
 void DrawTile(int32_t tile, int16_t x, int16_t y)
 {
-	int32_t dst = TileRowOffsets[(uint16_t)y] + ViewportFirstRow + (uint32_t)(uint16_t)x * 8;
+	/* Pointers taken once: through LINEAR() in the loop, the compiler reloads LinearBase
+	 * after every copy, as the copy might have changed it. */
+	uint8_t *dst = LINEAR(TileRowOffsets[(uint16_t)y] + ViewportFirstRow + (uint32_t)(uint16_t)x * 8);
+	const uint8_t *src = LINEAR(tile);
 	int16_t i;
 
 	for (i = 0; i < 8; i++) {
-		memcpy(LINEAR(dst), LINEAR(tile), 8);
-		tile += 8;
+		memcpy(dst, src, 8);
+		src += 8;
 		dst += SCREEN_WIDTH;
 	}
 }
