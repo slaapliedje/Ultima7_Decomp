@@ -16,6 +16,7 @@
 #include "sprite.h"
 #include "mapview.h"
 #include "weather.h"
+#include "byteorder.h"
 
 extern objref AvatarRef;
 
@@ -32,11 +33,28 @@ char WeatherFileName[] = "WEATHER.DAT";
 
 char *WeatherSaver::name() { return WeatherFileName; }
 
+/* Between host and file order: the file holds the record as the PC laid it out. */
+static void SwapWeather(WeatherSet *w)
+{
+	for (int16_t i = 0; i < WEATHER_PARTICLES; i++)
+		SWAP_LE(w->particles[i].x);
+	SWAP_LE(w->targetCount);
+	SWAP_LE(w->maxCount);
+	SWAP_LE(w->activeCount);
+	SWAP_LE(w->firstFrame);
+	SWAP_LE(w->firstSplashFrame);
+	SWAP_LE(w->frameCount);
+	SWAP_LE(w->splashFrames);
+	SWAP_LE(w->delay);
+}
+
 void WeatherSaver::save(char *path)
 {
 	int16_t fd;
 	fd = CreateFileOrFail(BuildPath(path, WeatherFileName, 0));
+	SwapWeather(&CurrentWeather);
 	DosWrite(fd, -INT32_C(1), (int32_t)sizeof(CurrentWeather), &CurrentWeather);
+	SwapWeather(&CurrentWeather);
 	DosClose(fd);
 }
 
@@ -45,6 +63,7 @@ void WeatherSaver::load(char *path)
 	int16_t fd;
 	fd = OpenFileOrFail(BuildPath(path, WeatherFileName, 0));
 	DosRead(fd, -INT32_C(1), (int32_t)sizeof(CurrentWeather), &CurrentWeather);
+	SwapWeather(&CurrentWeather);
 	DosClose(fd);
 }
 

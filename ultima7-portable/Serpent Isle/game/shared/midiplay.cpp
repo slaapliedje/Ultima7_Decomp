@@ -271,7 +271,7 @@ void StartSfxNote(int16_t n)
 		if (program != 0 && v->channel != 0) {
 			note = p[2];
 			velocity = p[3];
-			duration = *(int16_t *)(p + 4);
+			duration = (int16_t) LoadLE16(p + 4);
 			if (v->flags & VOICE_STEREO) {
 				pan = 0;
 				pan2 = 127;
@@ -347,7 +347,7 @@ void TickMidiSfx(void)
 						changed = 1;
 					if (changed) {
 						DriverNoteEntry(v->channel, v->note, v->data[3]);
-						v->duration = *(int16_t *)(v->data + 4);
+						v->duration = (int16_t) LoadLE16(v->data + 4);
 					} else if (flags & NOTE_CHAIN) {
 						v->data += (v->data[7] + 1) * 8;
 						StartSfxNote(i);

@@ -132,11 +132,14 @@ void * ReadTimbre(int16_t bank, int16_t patch)
 		if (TimbreEntry.bank == -1)
 			return 0;
 	} while (TimbreEntry.bank != bank || TimbreEntry.patch != patch);
+	SWAP_LE(TimbreEntry.offset);
 	ReadFileBlock(file, TimbreEntry.offset, 2, &TimbreSize);
+	SWAP_LE(TimbreSize);
 	data = AllocateFarHeap(TimbreSize + 10, 0);
 	if (!data)
 		AssertFail(__FILE__, 301);
-	*(uint16_t *)data = TimbreSize;
+	/* the drivers read the size little-endian, as it was in the file */
+	StoreLE16(data, TimbreSize);
 	ReadFileBlock(file, TimbreEntry.offset + 2, TimbreSize - 2,
 		(uint8_t *)data + 2);
 	DosClose(file);

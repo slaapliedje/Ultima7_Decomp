@@ -1,6 +1,8 @@
 #ifndef TRIGGER_H
 #define TRIGGER_H
 
+#include "byteorder.h"
+
 struct Coord;
 struct Script;
 
@@ -27,7 +29,7 @@ struct CellCoord;
 
 /* Two bytes of an egg's data, read as a word or byte by byte. */
 union EggData {
-	uint16_t word;
+	le_uint16 word;
 	struct { uint8_t first, second; } bytes;
 };
 
@@ -35,8 +37,8 @@ union EggData {
  * work type, its data2 the type and frame; a teleport egg's data1 holds a link (255 none) and a region,
  * its data2 the cell. */
 struct EggRecord {
-	uint16_t kind : 4, criteria : 3, nocturnal : 1;
-	uint16_t once : 1, hatched : 1, distance : 5, repeat : 1;
+	U7_BITS(uint16_t, kind : 4, criteria : 3, nocturnal : 1);
+	U7_BITS(uint16_t, once : 1, hatched : 1, distance : 5, repeat : 1);
 	uint8_t probability;
 	EggData data1;
 	uint8_t unusedByte;

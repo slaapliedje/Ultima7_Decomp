@@ -5,6 +5,7 @@
 #include "u7port.h"
 #include "plat.h"
 #include "dosio.h"
+#include "byteorder.h"
 
 #define DOS_FILE_NOT_FOUND 2
 #define DOS_ACCESS_DENIED 5
@@ -104,6 +105,56 @@ uint8_t DosWrite(int16_t handle, int32_t pos, int32_t count, void *buf)
 		if (GiveUp(code))
 			return 0;
 	}
+}
+
+/* Converts through a buffer, a few values at a time. */
+static uint8_t DosWriteLE(int16_t handle, const void *values, int16_t count, int16_t size)
+{
+	uint8_t buffer[128];
+	const uint8_t *from = (const uint8_t *) values;
+	int16_t n;
+
+	if (!U7_BIG_ENDIAN)
+		return DosWrite(handle, -INT32_C(1), (int32_t) count * size, (void *) values);
+	while (count > 0) {
+		n = count < (int16_t) (sizeof buffer / size) ? count : (int16_t) (sizeof buffer / size);
+		memcpy(buffer, from, (size_t) n * size);
+		if (size == 2)
+			SwapLE16Array(buffer, n);
+		else
+			SwapLE32Array(buffer, n);
+		if (!DosWrite(handle, -INT32_C(1), (int32_t) n * size, buffer))
+			return 0;
+		from += n * size;
+		count -= n;
+	}
+	return 1;
+}
+
+uint8_t DosWriteLE16(int16_t handle, const void *values, int16_t count)
+{
+	return DosWriteLE(handle, values, count, 2);
+}
+
+uint8_t DosWriteLE32(int16_t handle, const void *values, int16_t count)
+{
+	return DosWriteLE(handle, values, count, 4);
+}
+
+int32_t DosReadLE16(int16_t handle, void *values, int16_t count)
+{
+	int32_t got = DosRead(handle, -INT32_C(1), (int32_t) count * 2, values);
+
+	SwapLE16Array(values, (size_t) count);
+	return got;
+}
+
+int32_t DosReadLE32(int16_t handle, void *values, int16_t count)
+{
+	int32_t got = DosRead(handle, -INT32_C(1), (int32_t) count * 4, values);
+
+	SwapLE32Array(values, (size_t) count);
+	return got;
 }
 
 int32_t DosSeek(int16_t handle, int32_t pos, int8_t method)

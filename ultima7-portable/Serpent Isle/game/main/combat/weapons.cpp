@@ -37,6 +37,7 @@ void WeaponTable::load(char *name)
 	record.meleeReadyFrame = 1;
 	record.meleeStrikeFrame = 1;
 	CheckMojoBounds(count, INT32_C(0));
+	record.swap();
 	CopyFarToLinear(base, &record, INT32_C(21));
 	if (!ReadMojo(fd, -INT32_C(1), INT32_C(1), WeaponCount, count, base, INT32_C(21)))
 		ReportFileNotFound(name);

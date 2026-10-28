@@ -1,6 +1,8 @@
 #ifndef FLEX_H
 #define FLEX_H
 
+#include "byteorder.h"
+
 /* Where an object sits in a Flex file, and how long it is. */
 struct FlexEntry {
 	int32_t offset;
@@ -10,6 +12,8 @@ struct FlexEntry {
 	uint8_t empty() { return size == 0; }
 	void clear() { size = 0; offset = 0; }
 	int16_t operator==(FlexEntry other);
+	/* Between the file's little-endian order and the host's. */
+	void swap() { SWAP_LE(offset); SWAP_LE(size); }
 };
 
 /* The 128 bytes at the start of a Flex file; the entry table follows. */
@@ -39,6 +43,8 @@ struct FlexHeader {
 	void setTitle(char *text);
 	char *getTitle(char *buf);
 	void addWaste(int8_t flag, int32_t bytes);
+	/* Between the file's little-endian order and the host's. */
+	void swap();
 };
 
 struct FlexBase {

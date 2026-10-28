@@ -47,6 +47,13 @@ int32_t ReadFileBlock(int16_t handle, int32_t pos, int32_t count, void *buf);
 int32_t DosSeek(int16_t handle, int32_t pos, int8_t method);
 void WriteFileBlock(int16_t handle, int32_t pos, int32_t count, char *buf);
 
+/* count 16- or 32-bit values at the file's current position, kept little-endian in the file as
+ * the PC wrote them and native in memory. */
+uint8_t DosWriteLE16(int16_t handle, const void *values, int16_t count);
+uint8_t DosWriteLE32(int16_t handle, const void *values, int16_t count);
+int32_t DosReadLE16(int16_t handle, void *values, int16_t count);
+int32_t DosReadLE32(int16_t handle, void *values, int16_t count);
+
 #ifdef __cplusplus
 }
 #endif

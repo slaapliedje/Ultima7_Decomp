@@ -163,8 +163,8 @@ uint8_t WorldGump::accepts(objref dragged, int16_t x, int16_t y)
 	if (IS_VALID(target) && !IS_CLASS(target, TYPE_CLASS_HUMAN) && !IS_CLASS(target, TYPE_CLASS_MONSTER)
 		&& !CanStackWith(&target, dragged)) {
 		int16_t rise = (uint8_t) (Item_getZ(&target) + gItemTypeInfo[TYPE(target)].height) * 4;
-		int16_t w = GetFootprintX(*(TypeFrame *)&target.ptr()->typeFrame);
-		int16_t h = GetFootprintY(*(TypeFrame *)&target.ptr()->typeFrame);
+		int16_t w = GetFootprintX(TypeFrame(target.ptr()->typeFrame));
+		int16_t h = GetFootprintY(TypeFrame(target.ptr()->typeFrame));
 		int16_t tx, ty;
 
 		WorldCoordsToScreen(Item_getX(target), Item_getY(target), &tx, &ty);

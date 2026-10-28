@@ -273,9 +273,9 @@ void EditNpcTargets(NPCRef *npc)
 		ClearLeftPanel();
 		ClearRightPanel();
 		PrintInLeftPanel(1, 0, GetGameText(3, 99), (uint16_t)Item_getNpcNumber(npc));
-		PrintInRightPanel(1, 0, GetGameText(3, 100), GetGameText(5, 39), GetNpcBufferForIbo(npc)->primaryTarget);
-		PrintInRightPanel(1, 1, GetGameText(3, 100), GetGameText(5, 40), GetNpcBufferForIbo(npc)->secondaryTarget);
-		PrintInRightPanel(1, 2, GetGameText(3, 100), GetGameText(5, 41), GetNpcBufferForIbo(npc)->oppressor);
+		PrintInRightPanel(1, 0, GetGameText(3, 100), GetGameText(5, 39), (int16_t) GetNpcBufferForIbo(npc)->primaryTarget);
+		PrintInRightPanel(1, 1, GetGameText(3, 100), GetGameText(5, 40), (int16_t) GetNpcBufferForIbo(npc)->secondaryTarget);
+		PrintInRightPanel(1, 2, GetGameText(3, 100), GetGameText(5, 41), (int16_t) GetNpcBufferForIbo(npc)->oppressor);
 		PrintInRightPanel(1, 8, GetGameText(5, 42));
 		key = PromptForKey(GetGameText(5, 43));
 		switch (cmd = key >= 'a' && key <= 'z' ? key - 32 : key) {
@@ -915,8 +915,8 @@ void DumpNpcActivity(objref *npc)
 		YN(IsNpcUnconscious(npc)));
 	if (HasStatus(npc, NPC_IN_PARTY))
 		PrintInLeftPanel(21, 2, GetGameText(3, 120), (uint16_t)PartySitRefs[GetPartyIndex(*npc)]);
-	PrintInLeftPanel(1, 3, GetGameText(3, 121), GetNpcBufferForIbo(npc)->scheduleValue,
-		GetNpcBufferForIbo(npc)->scheduleToggle, GetNpcBufferForIbo(npc)->scheduleC, (uint16_t)GetNpcBufferForIbo(npc)->result);
+	PrintInLeftPanel(1, 3, GetGameText(3, 121), (uint16_t) GetNpcBufferForIbo(npc)->scheduleValue,
+		(uint16_t) GetNpcBufferForIbo(npc)->scheduleToggle, GetNpcBufferForIbo(npc)->scheduleC, (uint16_t)GetNpcBufferForIbo(npc)->result);
 	PrintInLeftPanel(1, 4, GetGameText(3, 122), Npc_getScheduleVariable0(npc), Npc_getScheduleVariable1(npc));
 	for (i = 0; i <= current; i++) {
 		GetNpcBufferForIbo(npc)->currentSchedule = i;
@@ -1141,15 +1141,15 @@ void ShowDebugMenu(void)
 					GetGameText(5, NPC(&who)->defaultAttackMode + 47),
 					GetGameText(5, GetAlignment(&who) + 58));
 				PrintInLeftPanel(1, 8, GetGameText(3, 148),
-					NPC(&who)->primaryTarget,
-					NPC(&who)->secondaryTarget,
-					NPC(&who)->oppressor,
+					(int16_t) NPC(&who)->primaryTarget,
+					(int16_t) NPC(&who)->secondaryTarget,
+					(int16_t) NPC(&who)->oppressor,
 					YN((uint8_t)(NPC(&who)->typeFlagsHigh & 1)),
 					YN((uint8_t)(NPC(&who)->typeFlagsHigh & 0x20)),
 					YN(HasStatus(&who, NPC_IN_PARTY)),
 					YN(CombatGroups.isProtectee(Item_getNpcNumber(&who))));
 				PrintInLeftPanel(1, 9, GetGameText(3, 149),
-					NPC(&who)->iVr[0], NPC(&who)->iVr[1],
+					(int16_t) NPC(&who)->iVr[0], (int16_t) NPC(&who)->iVr[1],
 					Npc_getScheduleVariable0(&who), Npc_getScheduleVariable1(&who),
 					Npc_getMovementRadius(&who));
 				GetNpcIbo(&target, GetCombatTarget(&who));

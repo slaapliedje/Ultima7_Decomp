@@ -3,6 +3,7 @@
  */
 
 #include "u7port.h"
+#include "byteorder.h"
 #include "sounddrv.h"
 
 namespace Endgame {
@@ -89,10 +90,12 @@ void *SoundDriver::loadTimbre(Timbre timbre)
 		if (entry.timbre.bank == -1)
 			return 0;
 	} while (entry.timbre.bank != timbre.bank || entry.timbre.patch != timbre.patch);
-	plat_file_seek(timbreFile, entry.offset, PLAT_SEEK_SET);
+	plat_file_seek(timbreFile, (int32_t) LE32((uint32_t) entry.offset), PLAT_SEEK_SET);
 	plat_file_read(timbreFile, &TimbreSize, 2);
+	SWAP_LE(TimbreSize);
 	data = FarAllocate(TimbreSize, 0, "Out of memory.");
-	*(uint16_t *)data = TimbreSize;
+	/* the drivers read the size little-endian, as it was in the file */
+	StoreLE16(data, TimbreSize);
 	plat_file_read(timbreFile, (char *)data + 2, TimbreSize - 2);
 	return data;
 }

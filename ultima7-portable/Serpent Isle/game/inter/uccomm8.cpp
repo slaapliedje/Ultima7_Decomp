@@ -75,7 +75,7 @@ void UC_SetItemFrame(Value *args)
 	int16_t item = ITEM_ARG(args - 1);
 	objref ref = item;
 
-	ref.ptr()->asTypeFrame().setFlipFrame(ARG(args - 2, 1));
+	ref.ptr()->setFlipFrame(ARG(args - 2, 1));
 }
 
 /* 0x1c */

@@ -39,7 +39,7 @@ void ScheduleSaver::load(char *dir)
 	n = f.readLong();
 	if (!Schedule_resize(&ScheduleTable, n))
 		FatalError("resize failed", __FILE__, 81);
-	f.read(ScheduleTable.index, (n + 1) * sizeof(uint16_t));
+	f.readWords(ScheduleTable.index, (int16_t) (n + 1));
 	f.read(ScheduleTable.entries, INT32_C(4000));
 	total = 0;
 	for (i = 0; i < ScheduleTable.count; i++)
@@ -53,9 +53,9 @@ void ScheduleSaver::save(char *dir)
 	DataFile f(BuildPath(dir, ScheduleSaveName, 0), 0);
 	int32_t n;
 
-	n = ScheduleTable.count;
+	n = (int32_t) LE32(ScheduleTable.count);
 	f.write(&n, INT32_C(4));
-	f.write(ScheduleTable.index, (ScheduleTable.count + 1) * sizeof(uint16_t));
+	f.writeWords(ScheduleTable.index, (int16_t) (ScheduleTable.count + 1));
 	f.write(ScheduleTable.entries, ScheduleTable.index[ScheduleTable.count] * sizeof(ScheduleEntry));
 }
 
@@ -74,6 +74,8 @@ void RevertSchedule(int16_t npc)
 	DosSeek(fd, (npc - 1) * sizeof(uint16_t) + 4, 0);
 	DosRead(fd, -INT32_C(1), INT32_C(2), &first);
 	DosRead(fd, -INT32_C(1), INT32_C(2), &last);
+	SWAP_LE(first);
+	SWAP_LE(last);
 	DosSeek(fd, ScheduleTable.count * sizeof(uint16_t) + first * sizeof(ScheduleEntry) + 4, 0);
 	for (n = (uint8_t)(*(ScheduleTable.index + (uint8_t)npc + 1) -
 			ScheduleTable.index[(uint8_t)npc]) - 1; n >= 0; n--)

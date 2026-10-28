@@ -19,7 +19,7 @@ inline void SetItemType(objref *r, int16_t type)
 {
 	uint16_t frame = (ITEM(r->off)->typeFrame & 0xfc00) >> 10;
 	ITEM(r->off)->setTypeFrame(type);
-	ITEM(r->off)->asTypeFrame().setFlipFrame(frame);
+	ITEM(r->off)->setFlipFrame(frame);
 }
 
 /* Usecode engine calls: args - 1 is the first argument, ret takes the result. */

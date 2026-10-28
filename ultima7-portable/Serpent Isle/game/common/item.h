@@ -10,7 +10,7 @@ struct CellCoord;
 
 /* The 8-byte extension a container or NPC record points to. */
 struct ItemExtra {
-	int16_t contents;
+	le_int16 contents;
 	uint8_t region, quality, flags, z, hitPoints, qualityFlags;
 };
 
@@ -77,7 +77,7 @@ int16_t FindRegionSlot(Loc x, Loc y);
 void Item_linkIntoContainer(objref *ref, objref container);
 uint8_t CreateItem(objref *ref, TypeFrame type, CellCoord x, CellCoord y, int16_t z);
 uint8_t CreateItemInContainer(objref *ref, TypeFrame type, objref container);
-int16_t * Item_findLink(objref *ref);
+le_int16 * Item_findLink(objref *ref);
 int8_t Item_spillContents(objref *ref);
 int8_t Item_deleteContents(objref *ref);
 objref Item_getContainer(objref *ref);
@@ -117,8 +117,9 @@ void CheckItemLists(void);
 void ReportBadFreeList(char *file, int16_t line);
 
 extern "C" uint8_t *ItemBufferBase;
-extern int16_t OffMapItemLink;
-extern int16_t ChunkItemLists[4][16][16];
+/* List heads; little-endian like the item records they link. */
+extern le_int16 OffMapItemLink;
+extern le_int16 ChunkItemLists[4][16][16];
 ItemInfo GetItemZAndStuff(objref *ref);
 
 #endif

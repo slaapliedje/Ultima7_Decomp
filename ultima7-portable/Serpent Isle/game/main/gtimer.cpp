@@ -80,9 +80,9 @@ void GameTimer::save(char *dir)
 	int16_t h;
 
 	h = CreateFileOrFail(BuildPath(dir, filename, 0));
-	DosWrite(h, -INT32_C(1), INT32_C(2), &ticks);
-	DosWrite(h, -INT32_C(1), INT32_C(2), &days);
-	DosWrite(h, -INT32_C(1), INT32_C(2), &rate);
+	DosWriteLE16(h, &ticks, 1);
+	DosWriteLE16(h, &days, 1);
+	DosWriteLE16(h, &rate, 1);
 	DosClose(h);
 }
 
@@ -97,9 +97,9 @@ void GameTimer::load(char *dir)
 
 	h = DosOpen(BuildPath(dir, filename, 0));
 	if (h != -1) {
-		DosRead(h, -INT32_C(1), INT32_C(2), &ticks);
-		DosRead(h, -INT32_C(1), INT32_C(2), &days);
-		DosRead(h, -INT32_C(1), INT32_C(2), &rate);
+		DosReadLE16(h, &ticks, 1);
+		DosReadLE16(h, &days, 1);
+		DosReadLE16(h, &rate, 1);
 	}
 	DosClose(h);
 }

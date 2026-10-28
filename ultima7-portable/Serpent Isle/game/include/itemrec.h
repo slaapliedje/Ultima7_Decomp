@@ -1,6 +1,8 @@
 #ifndef ITEMREC_H
 #define ITEMREC_H
 
+#include "byteorder.h"
+
 #include "typefram.h"
 #include "objref.h"
 #include "iteminfo.h"
@@ -8,27 +10,29 @@
 /* Where an item lies: a cell in its region on the map, or its container. */
 union ItemPosition {
 	struct { uint8_t x, y; } world;
-	int16_t parent;
+	le_int16 parent;
 };
 
-/* The 8-byte record in the item buffer. */
+/* The 8-byte record in the item buffer. Its words stay little-endian, as in the game's files,
+ * so the unions and the files keep the PC's layout on any host. */
 struct ItemRecord {
-	int16_t next;
+	le_int16 next;
 	ItemPosition position;
-	uint16_t typeFrame;
+	le_uint16 typeFrame;
 	union {
-		int16_t extra;
+		le_int16 extra;
 		struct { uint8_t z, quality; } direct;
 	} data;
 	void setTypeFrame(TypeFrame value) { typeFrame = value.bits; }
-	TypeFrame &asTypeFrame() { return *(TypeFrame *)&typeFrame; }
+	TypeFrame asTypeFrame() { return TypeFrame((uint16_t) typeFrame); }
+	void setFlipFrame(uint16_t frame) { TypeFrame t = asTypeFrame(); t.setFlipFrame(frame); setTypeFrame(t); }
 };
 
 /* A record's first six bytes, copied to draw an item without changing it. */
 struct ItemSnapshot {
-	int16_t next;
+	le_int16 next;
 	ItemPosition position;
-	uint16_t typeFrame;
+	le_uint16 typeFrame;
 	ItemSnapshot() {}
 };
 

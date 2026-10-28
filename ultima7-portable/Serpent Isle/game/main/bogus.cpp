@@ -93,8 +93,8 @@ void PickWorldCoordsOnItem(int16_t x, int16_t y, Coord *wx, Coord *wy, int16_t *
 		FindItemAtScreenPoint(target, x, y, &MainWorldView, &gShapeManager, 1);
 	if (target->valid()) {
 		int16_t rise = (uint8_t)(target->z() + gItemTypeInfo[target->type()].height) * 4;
-		int16_t w = GetFootprintX(*(TypeFrame *)&target->ptr()->typeFrame);
-		int16_t h = GetFootprintY(*(TypeFrame *)&target->ptr()->typeFrame);
+		int16_t w = GetFootprintX(TypeFrame(target->ptr()->typeFrame));
+		int16_t h = GetFootprintY(TypeFrame(target->ptr()->typeFrame));
 		int16_t tx, ty;
 		WorldCoordsToScreen(Item_getX(*target), Item_getY(*target), &tx, &ty);
 		int16_t x0 = tx - w * 8 - rise - 8;

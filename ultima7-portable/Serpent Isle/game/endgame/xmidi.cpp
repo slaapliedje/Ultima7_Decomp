@@ -47,7 +47,11 @@ void XmidiSequence::registerSequence(void *xmidi, int16_t n)
 			return;
 		}
 		for (;;) {
-			*(uint16_t *)&timbre = AIL_timbre_request(driver->getHandle(), handle);
+			/* bank in the high byte, patch in the low: the PC stored the word over the pair */
+			uint16_t request = AIL_timbre_request(driver->getHandle(), handle);
+
+			timbre.patch = (int8_t) (request & 0xff);
+			timbre.bank = (int8_t) (request >> 8);
 			if (timbre.bank != -1)
 				driver->installTimbre(timbre);
 			else

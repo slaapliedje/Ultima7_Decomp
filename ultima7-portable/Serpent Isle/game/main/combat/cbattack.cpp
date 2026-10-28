@@ -232,8 +232,8 @@ int8_t StrikeItem(objref actor, objref target)
 	if (weapon.isNull())
 		weapon = -1;
 	StrikeTargetItem = target;
-	StrikeTargetX = Coord(Item_getX(target) + (GetFootprintX(*(TypeFrame *)&target.ptr()->typeFrame) >> 1));
-	StrikeTargetY = Coord(Item_getY(target) + (GetFootprintY(*(TypeFrame *)&target.ptr()->typeFrame) >> 1));
+	StrikeTargetX = Coord(Item_getX(target) + (GetFootprintX(TypeFrame(target.ptr()->typeFrame)) >> 1));
+	StrikeTargetY = Coord(Item_getY(target) + (GetFootprintY(TypeFrame(target.ptr()->typeFrame)) >> 1));
 	StrikeTargetZ = Item_getZ(&target) + gItemTypeInfo[target.type()].height / 2;
 	return ResolveAttack(actor, weapon.index);
 }
@@ -256,8 +256,8 @@ uint8_t StrikeItemWithWeapon(objref actor, objref target, int16_t weapon)
 	if (!target.valid())
 		return 0;
 	StrikeTargetItem = target;
-	StrikeTargetX = Coord(Item_getX(target) + (GetFootprintX(*(TypeFrame *)&target.ptr()->typeFrame) >> 1));
-	StrikeTargetY = Coord(Item_getY(target) + (GetFootprintY(*(TypeFrame *)&target.ptr()->typeFrame) >> 1));
+	StrikeTargetX = Coord(Item_getX(target) + (GetFootprintX(TypeFrame(target.ptr()->typeFrame)) >> 1));
+	StrikeTargetY = Coord(Item_getY(target) + (GetFootprintY(TypeFrame(target.ptr()->typeFrame)) >> 1));
 	StrikeTargetZ = Item_getZ(&target) + gItemTypeInfo[target.type()].height / 2;
 	return ResolveAttack(actor, weapon);
 }

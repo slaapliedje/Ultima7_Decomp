@@ -41,10 +41,14 @@ void FlexWriter::openForWrite(char *path, FlexHeader *initial)
 
 void FlexWriter::writeEntry(int16_t i, FlexEntry *entry)
 {
+	FlexEntry image;
+
 	if (entry->size == 0)
 		entry->clear();
+	image = *entry;
+	image.swap();
 	if (!(int16_t)DosWrite(handle, (hdr.valid() ? (int32_t) sizeof(FlexHeader) : INT32_C(0)) + i * sizeof(FlexEntry), sizeof(FlexEntry),
-		entry))
+		&image))
 		ReportError(0xa913);
 	fragmentation = -1;
 }

@@ -19,7 +19,7 @@ inline int8_t operator==(const Coord &a, const Coord &b)
 	return a.value == b.value;
 }
 
-inline void SetFrame(uint16_t *typeFrame, uint16_t frame)
+inline void SetFrame(le_uint16 *typeFrame, uint16_t frame)
 {
 	*typeFrame = (*typeFrame & 0x3ff) | ((frame << 10) & 0xfc00);
 }

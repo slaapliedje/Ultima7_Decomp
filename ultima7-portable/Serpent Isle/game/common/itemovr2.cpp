@@ -3,6 +3,7 @@
  */
 
 #include "u7port.h"
+#include "byteorder.h"
 #include "lowlevel.h"
 #include "dosio.h"
 #include "item.h"
@@ -31,7 +32,7 @@
 /* one NPC in the save file: its item, its extra record and its NPC record */
 struct NpcSaveRecord {
 	uint8_t x, y;
-	uint16_t typeFrame;
+	le_uint16 typeFrame;
 	ItemRecord extra;
 	NpcBuffer actor;
 };
@@ -150,6 +151,8 @@ void LoadNpcs(char *filename)
 			ReportInvalidSaveGame();
 		if (DosRead(file, -INT32_C(1), INT32_C(2), &extraCount) != INT32_C(2))
 			ReportInvalidSaveGame();
+		SWAP_LE(count);
+		SWAP_LE(extraCount);
 		if (count > NpcRecordCount || extraCount > ExtraNpcRecordCount)
 			ReportInvalidSaveGame();
 		ResetNpcRecords(&actor);
@@ -217,8 +220,11 @@ void SaveNpcs(char *filename)
 
 	file = DosCreate(filename);
 	if (file >= 0) {
-		DosWrite(file, INT32_C(0), INT32_C(2), &NpcRecordCount);
-		DosWrite(file, -INT32_C(1), INT32_C(2), &ExtraNpcRecordCount);
+		le_int16 counts[2];
+
+		counts[0] = NpcRecordCount;
+		counts[1] = ExtraNpcRecordCount;
+		DosWrite(file, INT32_C(0), INT32_C(4), counts);
 		for (i = 0; i < NpcRecordCount + ExtraNpcRecordCount; i++) {
 			MoveFarMemory(&data.actor, GetCachedNpcBuffer(&NpcPool, i), sizeof(NpcBuffer));
 			data.actor.ref = NpcItemRefs[i];

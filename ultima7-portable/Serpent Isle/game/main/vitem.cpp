@@ -4,6 +4,7 @@
 
 /* path: vitem.c */
 #include "u7port.h"
+#include "byteorder.h"
 #include <new>
 #include "plat.h"
 #include "lowlevel.h"
@@ -48,7 +49,7 @@ struct IfixEntry {
 	uint16_t typeFrame;
 };
 
-extern int16_t ChunkItemLists[4][16][16];
+extern le_int16 ChunkItemLists[4][16][16];
 
 /* One of four cached U7IFIX region files, reused oldest first. */
 struct IfixCache : VoodooFlex {
@@ -200,7 +201,7 @@ void LoadChunkItems(Coord x, Coord y, WorldView *map)
 			cache->readRecord(idx, base, 0);
 			fixed = base;
 			for (i = 0; i < count; i++) {
-				CreateItem(&ref, TypeFrame(fixed->typeFrame).bits, (fixed->xy >> 4) + x, (fixed->xy & 0xf) + y,
+				CreateItem(&ref, TypeFrame(LE16(fixed->typeFrame)).bits, (fixed->xy >> 4) + x, (fixed->xy & 0xf) + y,
 					fixed->z);
 				fixed++;
 			}

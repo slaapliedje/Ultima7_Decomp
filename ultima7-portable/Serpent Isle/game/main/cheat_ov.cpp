@@ -66,7 +66,7 @@ void ShowTargetReport(void)
 		case EGG_USECODE:
 			ConsolePrintAt(1, 13, GetGameText(3, 73), EGG(egg)->data1.bytes.first);
 			ConsolePrintAt(1, 14, GetGameText(3, 74), EGG(egg)->data1.bytes.second);
-			ConsolePrintAt(1, 15, GetGameText(3, 75), EGG(egg)->data2.word);
+			ConsolePrintAt(1, 15, GetGameText(3, 75), (uint16_t) EGG(egg)->data2.word);
 			break;
 		case EGG_MISSILE:
 			ConsolePrintAt(1, 13, GetGameText(3, 76), GetGameText(0, EGG(egg)->data1.word & 0x3ff));

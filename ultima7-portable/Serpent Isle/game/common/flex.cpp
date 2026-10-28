@@ -26,18 +26,32 @@ void FlexHeader::clear()
 	checksum = computeChecksum();
 }
 
-/* the sum of the header's longs, less the checksum itself */
+/* the sum of the header's longs, less the checksum itself, as the file holds them */
 int32_t FlexHeader::computeChecksum()
 {
 	/* Unsigned, so the sum wraps as Borland's long did. */
 	uint32_t sum = 0;
 	uint16_t i;
-	int32_t *p = (int32_t *) this;
+	FlexHeader image = *this;
+	const uint8_t *p = (const uint8_t *) &image;
 
-	for (i = 0; i < sizeof(FlexHeader); i += sizeof(int32_t), p++)
-		sum += (uint32_t) *p;
+	image.swap();
+	for (i = 0; i < sizeof(FlexHeader); i += sizeof(int32_t))
+		sum += LoadLE32(p + i);
 	sum -= (uint32_t) checksum;
 	return (int32_t) sum;
+}
+
+void FlexHeader::swap()
+{
+	SWAP_LE(magic);
+	SWAP_LE(count);
+	SWAP_LE(version);
+	SWAP_LE(saveVersion);
+	SWAP_LE(unusedField1);
+	SWAP_LE(waste);
+	SWAP_LE(checksum);
+	SWAP_LE(unusedField2);
 }
 
 /* Reads the header from fd, keeping the count when the file has none. */
@@ -48,6 +62,7 @@ void FlexHeader::read(int16_t fd)
 	if (!valid()) {
 		savedCount = count;
 		DosRead(fd, INT32_C(0), sizeof(FlexHeader), this);
+		swap();
 		if (!valid()) {
 			clear();
 			count = savedCount;
@@ -59,8 +74,12 @@ void FlexHeader::read(int16_t fd)
 /* Writes the header back when it has changed. */
 void FlexHeader::writeIfChanged(int16_t fd)
 {
-	if (valid() && computeChecksum() != checksum)
-		DosWrite(fd, INT32_C(0), sizeof(FlexHeader), this);
+	if (valid() && computeChecksum() != checksum) {
+		FlexHeader image = *this;
+
+		image.swap();
+		DosWrite(fd, INT32_C(0), sizeof(FlexHeader), &image);
+	}
 }
 
 /* A new header, its checksum one off so that it gets written. */
@@ -203,6 +222,8 @@ uint8_t Flex::getEntry(int16_t i, FlexEntry *entry)
 	} else if (DosRead(handle, (hdr.valid() ? sizeof(FlexHeader) : INT32_C(0)) + i * sizeof(FlexEntry),
 		sizeof(FlexEntry), entry) != sizeof(FlexEntry))
 		ReportError(0xa904);
+	else
+		entry->swap();
 	return !entry->empty();
 }
 

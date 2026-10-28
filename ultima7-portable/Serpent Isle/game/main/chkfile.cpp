@@ -4,6 +4,7 @@
  */
 
 #include "u7port.h"
+#include "byteorder.h"
 #include <string.h>
 #include "init.h"
 #include "oops.h"
@@ -22,6 +23,8 @@ extern int16_t DosOpen(const char *);
 extern void DosClose(int16_t);
 extern int16_t DosCreate(const char *);
 extern int32_t DosSeek(int16_t, int32_t, int8_t);
+extern uint8_t DosWriteLE16(int16_t, const void *, int16_t);
+extern int32_t DosReadLE16(int16_t, void *, int16_t);
 }
 
 void DataFile::fail(int16_t code)
@@ -160,7 +163,7 @@ int16_t DataFile::readWord()
 	int16_t v;
 
 	read(&v, sizeof v);
-	return v;
+	return (int16_t) LE16((uint16_t) v);
 }
 
 int32_t DataFile::readLong()
@@ -168,7 +171,7 @@ int32_t DataFile::readLong()
 	int32_t v;
 
 	read(&v, sizeof v);
-	return v;
+	return (int32_t) LE32((uint32_t) v);
 }
 
 /* reads up to limit bytes into buf, stopping before the byte stop */
@@ -229,6 +232,22 @@ int16_t DataFile::write(void *buf, int32_t size)
 	if (mode == FILE_OPEN)
 		fail(READ_ONLY);
 	return DosWrite(handle, -INT32_C(1), size, buf);
+}
+
+void DataFile::writeWords(const void *values, int16_t count)
+{
+	if (handle == -1)
+		fail(NOT_OPEN);
+	if (mode == FILE_OPEN)
+		fail(READ_ONLY);
+	DosWriteLE16(handle, values, count);
+}
+
+void DataFile::readWords(void *values, int16_t count)
+{
+	if (handle == -1)
+		fail(NOT_OPEN);
+	DosReadLE16(handle, values, count);
 }
 
 /* writes count records of size bytes each from buf */

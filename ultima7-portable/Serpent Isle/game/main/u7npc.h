@@ -1,6 +1,8 @@
 #ifndef U7NPC_H
 #define U7NPC_H
 
+#include "byteorder.h"
+
 #include "activity.h"
 #include "typefram.h"
 #include "coord.h"
@@ -34,35 +36,36 @@ struct TypeFrame;
 /* One slot of an NPC's schedule stack; bytes 2-6 belong to the running schedule. */
 struct ScheduleSlot {
 	uint8_t kind, state;
-	int16_t x, y;
+	le_int16 x, y;
 	uint8_t counter;
 };
 
-/* The 105-byte NPC buffer record: NPC.DAT record bytes 12 onward. */
+/* The 105-byte NPC buffer record: NPC.DAT record bytes 12 onward. Its words stay little-endian,
+ * as in NPC.DAT and U7NBUF.DAT, which hold it byte for byte. */
 struct NpcBuffer {
-	int16_t nextFree;
-	int16_t ref;
-	uint16_t status;
+	le_int16 nextFree;
+	le_int16 ref;
+	le_uint16 status;
 	uint8_t strength, dexterity, intelligence, combat;
 	uint8_t workType, defaultAttackMode;
-	uint16_t type;
+	le_uint16 type;
 	uint8_t hitPoints;
 	uint8_t magic, mana, face;
 	uint8_t scheduleC;
 	int8_t unusedByte;
-	int32_t experience;
+	le_int32 experience;
 	uint8_t training;
-	int16_t primaryTarget, secondaryTarget, oppressor;
-	int16_t iVr[2], sVr[2];
+	le_int16 primaryTarget, secondaryTarget, oppressor;
+	le_int16 iVr[2], sVr[2];
 	uint8_t typeFlags, typeFlagsHigh;
 	int8_t direction;
-	uint16_t schedulePosition;
-	int16_t scheduleFlags;
+	le_uint16 schedulePosition;
+	le_int16 scheduleFlags;
 	ScheduleSlot schedules[5];
 	uint8_t food;
 	uint8_t currentSchedule;
-	int16_t result;
-	uint16_t scheduleValue, scheduleToggle;
+	le_int16 result;
+	le_uint16 scheduleValue, scheduleToggle;
 	char name[16];
 	void changeFlags(uint16_t clear, uint16_t set) {
 		status &= ~clear;

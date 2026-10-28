@@ -3,6 +3,7 @@
  */
 
 #include "u7port.h"
+#include "byteorder.h"
 #include "objref.h"
 #include "lowlevel.h"
 #include "typefram.h"
@@ -466,6 +467,7 @@ void WorldView::updateCells()
 				address = cache.getChunk(getChunkAt(Coord(column + (int16_t)CellWindowX), Coord(row + (int16_t)CellWindowY)));
 				for (line = 0; line < 16; line++) {
 					CopyLinearToFar(destination, address, INT32_C(32));
+					SwapLE16Array(destination, 16);
 					address += 32;
 					destination += CELL_WINDOW;
 				}

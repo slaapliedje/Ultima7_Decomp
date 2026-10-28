@@ -224,7 +224,7 @@ void UC_SetItemFrameRot(Value *args)
 	int16_t object = ITEM_ARG(args - 1);
 	objref ref = object;
 
-	ref.ptr()->asTypeFrame().setFlipFrame(ARG(args - 2, 1));
+	ref.ptr()->setFlipFrame(ARG(args - 2, 1));
 }
 
 /* 0x3c: an NPC's alignment */

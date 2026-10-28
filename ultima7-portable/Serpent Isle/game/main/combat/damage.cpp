@@ -346,7 +346,7 @@ int16_t ReduceHealth(objref target, int16_t damage, int16_t type, objref attacke
 														((int8_t)GenerateRandomIntegerInRange(2) ? 0x8000 : 0)), x, y, 0))
 						Item_setTemporary(&blood);
 				} else {
-					items.current.ptr()->asTypeFrame().setFlipFrame(GenerateRandomIntegerInRange(4) +
+					items.current.ptr()->setFlipFrame(GenerateRandomIntegerInRange(4) +
 						(GenerateRandomIntegerInRange(2) ? 0x8000 : 0));
 				}
 			}

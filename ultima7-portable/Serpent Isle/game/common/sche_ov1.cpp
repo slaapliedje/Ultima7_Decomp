@@ -51,9 +51,11 @@ uint8_t Schedule_read(Schedules *s, char *name)
 	if (fd == -1)
 		return 0;
 	DosRead(fd, -INT32_C(1), sizeof n, &n);
+	SWAP_LE(n);
 	if (!Schedule_resize(s, n))
 		return 0;
 	DosRead(fd, -INT32_C(1), (n + 1) * sizeof(uint16_t), s->index);
+	SwapLE16Array(s->index, n + 1);
 	DosRead(fd, -INT32_C(1), MAX_SCHEDULE_ENTRIES * sizeof(ScheduleEntry), s->entries);
 	DosClose(fd);
 	size = GetFileSize(name);

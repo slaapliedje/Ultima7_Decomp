@@ -4,6 +4,7 @@
 
 /* path: sortitem.c */
 #include "u7port.h"
+#include "byteorder.h"
 #include "itemrec.h"
 #include "iteminfo.h"
 #include "type.h"
@@ -78,7 +79,7 @@ struct NpcView : ViewRecord {
 };
 
 extern objref DetachedItems;
-extern int16_t ChunkItemLists[4][16][16];
+extern le_int16 ChunkItemLists[4][16][16];
 
 extern int16_t FindRegionSlot(Loc, Loc);
 extern Coord Item_getX(objref &);
@@ -230,7 +231,7 @@ int16_t CompareItemExtent(ShapeExtent *box, objref r)
 /* places an item taken from the free list at (x, y) in its chunk, in drawing order */
 uint8_t PlaceItem(objref *ref, CellCoord x, CellCoord y)
 {
-	objref *head;
+	le_int16 *head;             /* a chunk list head, little-endian like the links */
 	int16_t tx, ty, xEnd, yEnd, area;
 	objref current, prev, before, found;
 	ShapeExtent first, second;
@@ -246,7 +247,7 @@ uint8_t PlaceItem(objref *ref, CellCoord x, CellCoord y)
 			ty = (y & 0xff) >> 4;
 			xEnd = (tx << 4) + 15;
 			yEnd = (ty << 4) + 15;
-			head = (objref *)&ChunkItemLists[area][ty][tx];
+			head = &ChunkItemLists[area][ty][tx];
 			DetachedItems = ITEM(*ref)->next;
 			ITEM(*ref)->position.world.x = x;
 			ITEM(*ref)->position.world.y = y;
@@ -254,9 +255,9 @@ uint8_t PlaceItem(objref *ref, CellCoord x, CellCoord y)
 			if (FLAG(ItemTypeClassFlags[gItemTypeInfo[ITEM_TYPE(*ref)].typeClass], CLASS_REGION))
 				Item_setRegion(ref, LoadedRegions[area]);
 			prev = 0;
-			ITEM(prev)->next = head->off;
+			ITEM(prev)->next = *head;
 			SetItemExtent(&first, *ref, xEnd, yEnd);
-			for (current.off = head->off; current.valid() && CompareItemExtent(&first, current) != 1;
+			for (current.off = *head; current.valid() && CompareItemExtent(&first, current) != 1;
 				prev = current, current = current.next())
 				;
 			ITEM(*ref)->next = current.off;
@@ -292,7 +293,7 @@ uint8_t PlaceItem(objref *ref, CellCoord x, CellCoord y)
 				}
 			}
 			prev = 0;
-			head->off = ITEM(prev)->next;
+			*head = ITEM(prev)->next;
 			ITEM(prev)->next = 0;
 			AddTypeToCollision(*ref);
 			if (IS_NPC(*ref)) {

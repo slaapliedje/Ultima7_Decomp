@@ -105,10 +105,41 @@ char *MissileFile::name()
 	return MissTracFileName;
 }
 
+/* Between host and file order: the file holds the trackers as the PC laid them out. */
+static void SwapMissileTrackers(void)
+{
+	for (int16_t i = 0; i < MISSILE_COUNT; i++) {
+		MissileTracker *t = &MissileTrackers[i];
+
+		SWAP_LE(t->initialDistance);
+		SWAP_LE(t->stepsRemaining);
+		SWAP_LE(t->middleError);
+		SWAP_LE(t->middleStep);
+		SWAP_LE(t->middleCorrection);
+		SWAP_LE(t->minorError);
+		SWAP_LE(t->minorStep);
+		SWAP_LE(t->minorCorrection);
+		SWAP_LE(t->x);
+		SWAP_LE(t->y);
+		SWAP_LE(t->z);
+		SWAP_LE(t->missile);
+		SWAP_LE(t->weapon);
+		SWAP_LE(t->ammo);
+		SWAP_LE(t->attacker.off);
+		SWAP_LE(t->target.off);
+		SWAP_LE(t->range);
+		SWAP_LE(t->targetX.value);
+		SWAP_LE(t->targetY.value);
+		SWAP_LE(t->storedChecksum);
+	}
+}
+
 void MissileFile::save(char *directory)
 {
 	int16_t file = CreateFileOrFail(BuildPath(directory, MissTracFileName, 0));
+	SwapMissileTrackers();
 	DosWrite(file, -INT32_C(1), (int32_t)sizeof MissileTrackers, MissileTrackers);
+	SwapMissileTrackers();
 	DosClose(file);
 }
 
@@ -116,6 +147,7 @@ void MissileFile::load(char *directory)
 {
 	int16_t file = OpenFileOrFail(BuildPath(directory, MissTracFileName, 0));
 	DosRead(file, -INT32_C(1), (int32_t)sizeof MissileTrackers, MissileTrackers);
+	SwapMissileTrackers();
 	DosClose(file);
 }
 
