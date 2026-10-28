@@ -223,6 +223,22 @@ int16_t DataFile::write(void *buf, int32_t size)
 	return DosWrite(handle, -INT32_C(1), size, buf);
 }
 
+void DataFile::writeWords(const void *values, int16_t count)
+{
+	if (handle == -1)
+		fail(NOT_OPEN);
+	if (mode == FILE_OPEN)
+		fail(READ_ONLY);
+	DosWriteLE16(handle, values, count);
+}
+
+void DataFile::readWords(void *values, int16_t count)
+{
+	if (handle == -1)
+		fail(NOT_OPEN);
+	DosReadLE16(handle, values, count);
+}
+
 /* writes count records of size bytes each from buf */
 void DataFile::writeRecords(uint32_t count, char *buf, uint32_t size)
 {

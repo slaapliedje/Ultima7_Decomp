@@ -102,9 +102,9 @@ void ItemNodesSaver::save(char *dir)
 	char tmp[80];
 
 	fd = CreateFileOrFail(BuildPath(dir, ItemNodeFileName, 0));
-	DosWrite(fd, -INT32_C(1), sizeof ItemFreeList, &ItemFreeList);
-	DosWrite(fd, -INT32_C(1), sizeof ItemFreeCount, &ItemFreeCount);
-	DosWrite(fd, -INT32_C(1), sizeof DetachedItems.off, &DetachedItems.off);
+	DosWriteLE16(fd, &ItemFreeList, 1);
+	DosWriteLE16(fd, &ItemFreeCount, 1);
+	DosWriteLE16(fd, &DetachedItems.off, 1);
 	DosWrite(fd, -INT32_C(1), sizeof ChunkItemLists, ChunkItemLists);
 	DosWrite(fd, -INT32_C(1), sizeof LoadedRegions, LoadedRegions);
 	DosWrite(fd, -INT32_C(1), sizeof CurrentRegion, &CurrentRegion);
@@ -133,9 +133,9 @@ void ItemNodesSaver::load(char *dir)
 	int16_t i;
 
 	fd = OpenFileOrFail(BuildPath(dir, ItemNodeFileName, 0));
-	DosRead(fd, -INT32_C(1), sizeof ItemFreeList, &ItemFreeList);
-	DosRead(fd, -INT32_C(1), sizeof ItemFreeCount, &ItemFreeCount);
-	DosRead(fd, -INT32_C(1), sizeof DetachedItems.off, &DetachedItems.off);
+	DosReadLE16(fd, &ItemFreeList, 1);
+	DosReadLE16(fd, &ItemFreeCount, 1);
+	DosReadLE16(fd, &DetachedItems.off, 1);
 	DosRead(fd, -INT32_C(1), sizeof ChunkItemLists, ChunkItemLists);
 	DosRead(fd, -INT32_C(1), sizeof LoadedRegions, LoadedRegions);
 	DosRead(fd, -INT32_C(1), sizeof CurrentRegion, &CurrentRegion);
@@ -178,18 +178,18 @@ void OstiaSaver::save(char *dir)
 
 	fd = CreateFileOrFail(BuildPath(dir, U7OstiaFileName, 0));
 	DosWrite(fd, -INT32_C(1), sizeof AvatarDontMove, &AvatarDontMove);
-	DosWrite(fd, -INT32_C(1), sizeof CurrentVehicle, &CurrentVehicle);
+	DosWriteLE16(fd, &CurrentVehicle, 1);
 	DosWrite(fd, -INT32_C(1), sizeof ArmageddonDone, &ArmageddonDone);
-	DosWrite(fd, -INT32_C(1), sizeof ActiveSailor, &ActiveSailor);
+	DosWriteLE16(fd, &ActiveSailor, 1);
 	DosWrite(fd, -INT32_C(1), sizeof OinkMode, &OinkMode);
 	DosWrite(fd, -INT32_C(1), sizeof CurrentMusic, &CurrentMusic);
 	DosWrite(fd, -INT32_C(1), sizeof SpecialMusicPlaying, &SpecialMusicPlaying);
 	DosWrite(fd, -INT32_C(1), sizeof MusicResume, &MusicResume);
-	DosWrite(fd, -INT32_C(1), sizeof DeadPartyMembers, DeadPartyMembers);
-	DosWrite(fd, -INT32_C(1), sizeof DeadPartyCount, &DeadPartyCount);
-	DosWrite(fd, -INT32_C(1), sizeof ActiveBarge, &ActiveBarge);
-	DosWrite(fd, -INT32_C(1), sizeof EarthquakeCount, &EarthquakeCount);
-	DosWrite(fd, -INT32_C(1), sizeof ActiveMissiles, &ActiveMissiles);
+	DosWriteLE16(fd, DeadPartyMembers, 12);
+	DosWriteLE16(fd, &DeadPartyCount, 1);
+	DosWriteLE16(fd, &ActiveBarge, 1);
+	DosWriteLE16(fd, &EarthquakeCount, 1);
+	DosWriteLE16(fd, &ActiveMissiles, 1);
 	DosClose(fd);
 }
 
@@ -199,18 +199,18 @@ void OstiaSaver::load(char *dir)
 
 	fd = OpenFileOrFail(BuildPath(dir, U7OstiaFileName, 0));
 	DosRead(fd, -INT32_C(1), sizeof AvatarDontMove, &AvatarDontMove);
-	DosRead(fd, -INT32_C(1), sizeof CurrentVehicle, &CurrentVehicle);
+	DosReadLE16(fd, &CurrentVehicle, 1);
 	DosRead(fd, -INT32_C(1), sizeof ArmageddonDone, &ArmageddonDone);
-	DosRead(fd, -INT32_C(1), sizeof ActiveSailor, &ActiveSailor);
+	DosReadLE16(fd, &ActiveSailor, 1);
 	DosRead(fd, -INT32_C(1), sizeof OinkMode, &OinkMode);
 	DosRead(fd, -INT32_C(1), sizeof CurrentMusic, &CurrentMusic);
 	DosRead(fd, -INT32_C(1), sizeof SpecialMusicPlaying, &SpecialMusicPlaying);
 	DosRead(fd, -INT32_C(1), sizeof MusicResume, &MusicResume);
-	DosRead(fd, -INT32_C(1), sizeof DeadPartyMembers, DeadPartyMembers);
-	DosRead(fd, -INT32_C(1), sizeof DeadPartyCount, &DeadPartyCount);
-	DosRead(fd, -INT32_C(1), sizeof ActiveBarge, &ActiveBarge);
-	DosRead(fd, -INT32_C(1), sizeof EarthquakeCount, &EarthquakeCount);
-	DosRead(fd, -INT32_C(1), sizeof ActiveMissiles, &ActiveMissiles);
+	DosReadLE16(fd, DeadPartyMembers, 12);
+	DosReadLE16(fd, &DeadPartyCount, 1);
+	DosReadLE16(fd, &ActiveBarge, 1);
+	DosReadLE16(fd, &EarthquakeCount, 1);
+	DosReadLE16(fd, &ActiveMissiles, 1);
 	DosClose(fd);
 }
 

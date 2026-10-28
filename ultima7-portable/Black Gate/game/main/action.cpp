@@ -110,8 +110,8 @@ char *Action::describeName()
 
 void Action::write(int16_t handle)
 {
-	DosWrite(handle, -INT32_C(1), INT32_C(2), &target);
-	DosWrite(handle, -INT32_C(1), INT32_C(2), &due);
+	DosWriteLE16(handle, &target.off, 1);
+	DosWriteLE16(handle, &due, 1);
 	DosWrite(handle, -INT32_C(1), INT32_C(1), &flags);
 	DosWrite(handle, -INT32_C(1), INT32_C(1), &cursor);
 	DosWrite(handle, -INT32_C(1), script[0], script);

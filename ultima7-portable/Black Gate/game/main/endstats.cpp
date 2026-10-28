@@ -19,6 +19,7 @@ int16_t GameDate::load(char *name)
 	int32_t n;
 
 	n = f.read(this, sizeof *this);
+	SwapLE16Array(this, 3);     /* year, month, day: little-endian, as the PC wrote them */
 	return n == sizeof *this;
 }
 
@@ -26,6 +27,6 @@ int16_t GameDate::save(char *name)
 {
 	DataFile f(name, FILE_CREATE);
 
-	f.write(this, sizeof *this);
+	f.writeWords(this, 3);
 	return 1;
 }

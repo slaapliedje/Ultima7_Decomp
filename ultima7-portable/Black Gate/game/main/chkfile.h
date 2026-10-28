@@ -36,6 +36,9 @@ struct DataFile {
 	void writeByte(int8_t value);
 	int16_t write(void *buf, int32_t size);
 	void writeWord(int16_t n) { uint16_t le = LE16((uint16_t) n); write(&le, INT32_C(2)); }
+	/* count 16-bit values, little-endian in the file and native in memory */
+	void writeWords(const void *values, int16_t count);
+	void readWords(void *values, int16_t count);
 	void writeRecords(uint32_t count, char *buf, uint32_t size);
 	void copyFrom(DataFile *source, uint32_t count);
 };

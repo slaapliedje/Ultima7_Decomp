@@ -31,10 +31,10 @@ void MapCoordsSaver::save(char *dir)
 	int16_t fd;
 
 	fd = CreateFileOrFail(BuildPath(dir, MapCoordFileName, 0));
-	DosWrite(fd, -INT32_C(1), INT32_C(2), &MainWorldView.centerX);
-	DosWrite(fd, -INT32_C(1), INT32_C(2), &MainWorldView.centerY);
+	DosWriteLE16(fd, &MainWorldView.centerX.value, 1);
+	DosWriteLE16(fd, &MainWorldView.centerY.value, 1);
 	DosWrite(fd, -INT32_C(1), INT32_C(3), MainWorldView.renderer.savedState);
-	DosWrite(fd, -INT32_C(1), INT32_C(2), &MainWorldView.renderer.animationTick);
+	DosWriteLE16(fd, &MainWorldView.renderer.animationTick, 1);
 	DosClose(fd);
 }
 
@@ -43,10 +43,10 @@ void MapCoordsSaver::load(char *dir)
 	int16_t fd;
 
 	fd = OpenFileOrFail(BuildPath(dir, MapCoordFileName, 0));
-	DosRead(fd, -INT32_C(1), INT32_C(2), &MainWorldView.centerX);
-	DosRead(fd, -INT32_C(1), INT32_C(2), &MainWorldView.centerY);
+	DosReadLE16(fd, &MainWorldView.centerX.value, 1);
+	DosReadLE16(fd, &MainWorldView.centerY.value, 1);
 	DosRead(fd, -INT32_C(1), INT32_C(3), MainWorldView.renderer.savedState);
-	DosRead(fd, -INT32_C(1), INT32_C(2), &MainWorldView.renderer.animationTick);
+	DosReadLE16(fd, &MainWorldView.renderer.animationTick, 1);
 	DosClose(fd);
 }
 

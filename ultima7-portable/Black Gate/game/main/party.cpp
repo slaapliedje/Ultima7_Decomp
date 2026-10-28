@@ -333,7 +333,7 @@ void PartySaver::save(char *directory)
 		AddToParty(AvatarRef, 0);
 	}
 	DataFile f(BuildPath(directory, PartyFileName, 0), 0);
-	f.write(PartyMembers, INT32_C(16));
+	f.writeWords(PartyMembers, 8);
 	f.writeByte(PartySize);
 	f.writeByte(PartyFacing);
 	f.write(PartyMemberFlags, INT32_C(8));
@@ -343,14 +343,14 @@ void PartySaver::save(char *directory)
 	f.write(FormationSlotY, INT32_C(64));
 	f.writeByte(FormationFacing);
 	f.writeByte(FormationSize);
-	f.write(DownedPartyMembers, INT32_C(32));
+	f.writeWords(DownedPartyMembers, 16);
 	f.writeByte(DownedPartyCount);
 }
 
 void PartySaver::load(char *directory)
 {
 	DataFile f(BuildPath(directory, PartyFileName, 0), 1);
-	f.read(PartyMembers, INT32_C(16));
+	f.readWords(PartyMembers, 8);
 	PartySize = f.readByte();
 	PartyFacing = f.readByte();
 	f.read(PartyMemberFlags, INT32_C(8));
@@ -360,7 +360,7 @@ void PartySaver::load(char *directory)
 	f.read(FormationSlotY, INT32_C(64));
 	FormationFacing = f.readByte();
 	FormationSize = f.readByte();
-	f.read(DownedPartyMembers, INT32_C(32));
+	f.readWords(DownedPartyMembers, 16);
 	DownedPartyCount = f.readByte();
 }
 

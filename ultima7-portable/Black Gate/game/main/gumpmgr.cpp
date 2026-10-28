@@ -134,7 +134,7 @@ void GumpFile::save(char *path)
 
 	fd = CreateFileOrFail(BuildPath(path, GumpMgrFileName, 0));
 	for (i = 0; i < 8; i++)
-		DosWrite(fd, -INT32_C(1), (int32_t) sizeof(Point), PaperdollPositions[i]);
+		DosWriteLE16(fd, PaperdollPositions[i], 2);     /* x, y */
 	DosClose(fd);
 }
 
@@ -146,7 +146,7 @@ void GumpFile::load(char *path)
 	fd = DosOpen(BuildPath(path, GumpMgrFileName, 0));
 	if (fd != -1)
 		for (i = 0; i < 8; i++)
-			DosRead(fd, -INT32_C(1), (int32_t) sizeof(Point), PaperdollPositions[i]);
+			DosReadLE16(fd, PaperdollPositions[i], 2);
 	DosClose(fd);
 }
 

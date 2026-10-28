@@ -68,9 +68,9 @@ void ActionScheduler::save(char *dir)
 {
 	uint8_t current;
 	int16_t handle = CreateFileOrFail(BuildPath(dir, ActionFileName, 0));
-	DosWrite(handle, -INT32_C(1), INT32_C(2), &ActionQueueTime);
+	DosWriteLE16(handle, &ActionQueueTime, 1);
 	DosWrite(handle, -INT32_C(1), INT32_C(1), &SuspendedActionCount);
-	DosWrite(handle, -INT32_C(1), INT32_C(2), &count);
+	DosWriteLE16(handle, &count, 1);
 	for (current = first(); current; current = entries[current].next)
 		entries[current].write(handle);
 	DosClose(handle);
@@ -80,8 +80,8 @@ void ActionScheduler::readEntry(int16_t handle, uint16_t *target, int16_t *due, 
 	char *script)
 {
 	int8_t length;
-	DosRead(handle, -INT32_C(1), INT32_C(2), target);
-	DosRead(handle, -INT32_C(1), INT32_C(2), due);
+	DosReadLE16(handle, target, 1);
+	DosReadLE16(handle, due, 1);
 	DosRead(handle, -INT32_C(1), INT32_C(1), flags);
 	DosRead(handle, -INT32_C(1), INT32_C(1), cursor);
 	DosRead(handle, -INT32_C(1), INT32_C(1), &length);
@@ -99,9 +99,9 @@ void ActionScheduler::load(char *dir)
 	int16_t handle;
 	reset();
 	handle = OpenFileOrFail(BuildPath(dir, ActionFileName, 0));
-	DosRead(handle, -INT32_C(1), INT32_C(2), &ActionQueueTime);
+	DosReadLE16(handle, &ActionQueueTime, 1);
 	DosRead(handle, -INT32_C(1), INT32_C(1), &SuspendedActionCount);
-	DosRead(handle, -INT32_C(1), INT32_C(2), &remaining);
+	DosReadLE16(handle, &remaining, 1);
 	while (remaining > 0) {
 		readEntry(handle, &target, &due, &flags, &cursor, script);
 		add(due - ActionQueueTime, target, script, flags, cursor, 0);

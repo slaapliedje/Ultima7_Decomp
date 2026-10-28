@@ -77,8 +77,8 @@ void NpcSaver::save(char *dir)
 		GetCachedNpcBuffer(&NpcPool, i)->ref = NpcItemRefs[i];
 		DosWrite(file, -INT32_C(1), (int32_t)sizeof(NpcBuffer), GetCachedNpcBuffer(&NpcPool, i));
 	}
-	DosWrite(file, -INT32_C(1), INT32_C(2), &FreeNpcNumbers);
-	DosWrite(file, -INT32_C(1), INT32_C(2), &FreeMonsterNumbers);
+	DosWriteLE16(file, &FreeNpcNumbers, 1);
+	DosWriteLE16(file, &FreeMonsterNumbers, 1);
 	WriteHandleFromVoodoo(file, -INT32_C(1), (uint16_t) ((NpcRecordCount + ExtraNpcRecordCount) * 24), EquipList);
 	DosClose(file);
 }
@@ -98,8 +98,8 @@ void NpcSaver::load(char *directory)
 		DosRead(file, -INT32_C(1), (int32_t)sizeof(NpcBuffer), GetCachedNpcBuffer(&NpcPool, i));
 		NpcItemRefs[i] = GetCachedNpcBuffer(&NpcPool, i)->ref;
 	}
-	DosRead(file, -INT32_C(1), INT32_C(2), &FreeNpcNumbers);
-	DosRead(file, -INT32_C(1), INT32_C(2), &FreeMonsterNumbers);
+	DosReadLE16(file, &FreeNpcNumbers, 1);
+	DosReadLE16(file, &FreeMonsterNumbers, 1);
 	ReadHandleToVoodoo(file, -INT32_C(1), (uint16_t)((NpcRecordCount + ExtraNpcRecordCount) * 24), &EquipList.address);
 	DosClose(file);
 }

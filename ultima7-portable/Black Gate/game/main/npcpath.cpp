@@ -56,7 +56,7 @@ void PathSaver::save(char *dir)
 		else
 			used[i] = 0;
 	f.write(used, INT32_C(15));
-	f.write((char *) RouteOwners, INT32_C(30));
+	f.writeWords(RouteOwners, 15);
 	for (i = 0; i < 15; i++)
 		if (used[i]) {
 			sprintf(name, "PATH%d.DAT", i);
@@ -72,7 +72,7 @@ void PathSaver::load(char *dir)
 	int16_t i;
 
 	f.read(used, INT32_C(15));
-	f.read((char *) RouteOwners, INT32_C(30));
+	f.readWords(RouteOwners, 15);
 	for (i = 0; i < 15; i++) {
 		if (NPCRoutes[i]) {
 			delete NPCRoutes[i];
@@ -668,15 +668,31 @@ uint8_t Route::straighten(StepList *list, int8_t avoid, int16_t *length, int8_t 
 	return 1;
 }
 
+/* A waypoint as the PC's files hold it: x and y little-endian, then z. */
+static void WriteWaypoint(DataFile *f, Waypoint *w)
+{
+	f->writeWord(w->x.value);
+	f->writeWord(w->y.value);
+	f->writeByte(w->z);
+}
+
+static void ReadWaypoint(DataFile *f, Waypoint *w)
+{
+	w->x.value = f->readWord();
+	w->y.value = f->readWord();
+	w->z = f->readByte();
+}
+
 void Route::save(char *name)
 {
 	DataFile f(name, 0);
+	int16_t i;
 
 	f.writeWord(planCount);
 	f.writeWord(attempts);
 	f.writeWord(limit);
 	f.writeWord(cachedValid);
-	f.write((char *) &cached, INT32_C(5));
+	WriteWaypoint(&f, &cached);
 	f.writeWord(tracked.off);
 	f.writeWord(hold);
 	f.writeWord(ready);
@@ -690,7 +706,8 @@ void Route::save(char *name)
 	f.writeWord(index);
 	f.writeWord(failures);
 	f.writeWord(path.count);
-	f.write((char *) path.data, path.count * sizeof(Waypoint));
+	for (i = 0; i < path.count; i++)
+		WriteWaypoint(&f, &path.data[i]);
 }
 
 void Route::load(char *name)
@@ -704,7 +721,7 @@ void Route::load(char *name)
 	attempts = f.readWord();
 	limit = f.readWord();
 	cachedValid = f.readWord();
-	f.read((char *) &cached, INT32_C(5));
+	ReadWaypoint(&f, &cached);
 	tracked = f.readWord();
 	hold = f.readWord();
 	ready = f.readWord();
@@ -721,7 +738,7 @@ void Route::load(char *name)
 	if (!path.allocate(count))
 		ReportOutOfFarMemory();
 	for (i = 0; i < count; i++) {
-		f.read((char *) &w, INT32_C(5));
+		ReadWaypoint(&f, &w);
 		path.set(i, &w);
 	}
 }

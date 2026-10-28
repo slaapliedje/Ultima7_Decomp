@@ -30,7 +30,7 @@ void RandSeed::save(char *dir)
 
 	fd = CreateFileOrFail(BuildPath(dir, RandSeedFileName, 0));
 	seed = GetRandomSeed();
-	DosWrite(fd, -INT32_C(1), INT32_C(4), &seed);
+	DosWriteLE32(fd, &seed, 1);
 	DosClose(fd);
 }
 
@@ -41,7 +41,7 @@ void RandSeed::load(char *dir)
 
 	fd = DosOpen(BuildPath(dir, RandSeedFileName, 0));
 	if (fd != -1) {
-		DosRead(fd, -INT32_C(1), INT32_C(4), &seed);
+		DosReadLE32(fd, &seed, 1);
 		SetRandomSeed(seed);
 	}
 	DosClose(fd);
