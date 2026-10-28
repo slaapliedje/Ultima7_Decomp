@@ -35,10 +35,10 @@ void PhilbertSaver::save(char *dir)
 	KeyRing.encode();
 	fd = CreateFileOrFail(BuildPath(dir, PhilbertFileName, 0));
 	DosWrite(fd, -INT32_C(1), INT32_C(33), &KeyRing);
-	DosWrite(fd, -INT32_C(1), INT32_C(2), &InfravisionEnabled);
-	DosWrite(fd, -INT32_C(1), INT32_C(2), &MarkedX);
-	DosWrite(fd, -INT32_C(1), INT32_C(2), &MarkedY);
-	DosWrite(fd, -INT32_C(1), INT32_C(2), &MarkedZ);
+	DosWriteLE16(fd, &InfravisionEnabled, 1);
+	DosWriteLE16(fd, &MarkedX, 1);
+	DosWriteLE16(fd, &MarkedY, 1);
+	DosWriteLE16(fd, &MarkedZ, 1);
 	DosClose(fd);
 	KeyRing.decode();
 }
@@ -49,10 +49,10 @@ void PhilbertSaver::load(char *dir)
 
 	fd = OpenFileOrFail(BuildPath(dir, PhilbertFileName, 0));
 	DosRead(fd, -INT32_C(1), INT32_C(33), &KeyRing);
-	DosRead(fd, -INT32_C(1), INT32_C(2), &InfravisionEnabled);
-	DosRead(fd, -INT32_C(1), INT32_C(2), &MarkedX);
-	DosRead(fd, -INT32_C(1), INT32_C(2), &MarkedY);
-	DosRead(fd, -INT32_C(1), INT32_C(2), &MarkedZ);
+	DosReadLE16(fd, &InfravisionEnabled, 1);
+	DosReadLE16(fd, &MarkedX, 1);
+	DosReadLE16(fd, &MarkedY, 1);
+	DosReadLE16(fd, &MarkedZ, 1);
 	DosClose(fd);
 	KeyRing.decode();
 }
