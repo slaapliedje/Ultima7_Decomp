@@ -102,6 +102,12 @@ static inline uint32_t SwapLESized(uint32_t v, size_t size)
  * Copying one copies the bytes, unconverted. */
 template <class T> struct LittleEndian {
 	T raw;
+#ifdef U7_VARARGS_CHECK
+	/* A check build only: a value with a copy constructor of its own cannot pass through "...",
+	 * so GCC names each place one goes to printf unconverted. */
+	LittleEndian() = default;
+	LittleEndian(const LittleEndian &other) : raw(other.raw) {}
+#endif
 
 	operator T() const { return (T) SwapLESized((uint32_t) raw, sizeof(T)); }
 	LittleEndian &operator=(T v) { raw = (T) SwapLESized((uint32_t) v, sizeof(T)); return *this; }

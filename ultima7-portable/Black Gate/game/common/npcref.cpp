@@ -52,7 +52,7 @@ objref AvatarRef;
 int16_t FreeNpcNumbers = -1;
 int16_t FreeMonsterNumbers = -1;
 NpcBufferPool NpcPool;
-NpcBuffer NullNpcBuffer = { 0 };
+NpcBuffer NullNpcBuffer = {};
 
 /* one 7-byte record of the NPC pose table */
 void StoreNpcViewRecord(int32_t *address, int16_t index, NpcView *record)

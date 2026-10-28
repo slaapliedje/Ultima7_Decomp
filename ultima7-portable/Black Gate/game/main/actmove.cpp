@@ -68,7 +68,7 @@ void PauseSchedule(objref *ref)
 {
 	switch (CUR_SCHED(ref).state) {
 	case 0:
-		PostScheduleScript(ref, MakeScript(SCRIPT_WAIT, CUR_SCHED(ref).x, SCRIPT_END));
+		PostScheduleScript(ref, MakeScript(SCRIPT_WAIT, (int16_t) CUR_SCHED(ref).x, SCRIPT_END));
 		break;
 	case 1:
 		Npc_popSchedule(ref, 0);
