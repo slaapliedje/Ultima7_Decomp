@@ -5,10 +5,13 @@
 #include "u7port.h"
 #include "random.h"
 #include "itembase.h"
+#include "byteorder.h"
 #include "egg.h"
 
 #define ITEM(off) ((struct ItemRecord *) ItemAt((off)))
 #define EGG(off) ((struct EggRecord *) ItemAt((off)))
+/* the item's extra record, little-endian in the item buffer */
+#define EXTRA_OF(ref) ((int16_t) LoadLE16(&ITEM(ref)->extra))
 
 struct ItemRecord {
 	int16_t next;
@@ -27,18 +30,18 @@ int16_t Egg_rollChance(struct EggRecord *egg)
 
 void Egg_setHatched(int16_t *ref)
 {
-	EGG(ITEM(*ref)->extra)->hatched = 1;
+	EGG(EXTRA_OF(*ref))->hatched = 1;
 }
 
 void Egg_clearHatched(int16_t *ref)
 {
-	EGG(ITEM(*ref)->extra)->hatched = 0;
+	EGG(EXTRA_OF(*ref))->hatched = 0;
 }
 
 void Egg_setCriteriaAndDistance(int16_t *ref, uint8_t criteria, uint8_t distance)
 {
 	if (criteria < 8) {
-		EGG(ITEM(*ref)->extra)->criteria = criteria;
-		EGG(ITEM(*ref)->extra)->distance = distance;
+		EGG(EXTRA_OF(*ref))->criteria = criteria;
+		EGG(EXTRA_OF(*ref))->distance = distance;
 	}
 }

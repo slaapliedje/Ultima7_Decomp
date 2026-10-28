@@ -6,9 +6,12 @@
 #include "u7port.h"
 #include "random.h"
 #include "itembase.h"
+#include "byteorder.h"
 
 #define ITEM(off) ((struct ItemRecord *) ItemAt((off)))
 #define EGG(off) ((struct EggRecord *) ItemAt((off)))
+/* the item's extra record, little-endian in the item buffer */
+#define EXTRA_OF(ref) ((int16_t) LoadLE16(&ITEM(ref)->extra))
 
 #define EGG_HATCHED 0x02
 
@@ -35,10 +38,10 @@ int16_t Egg_rollChance(struct EggRecord *egg)
 
 void Egg_setHatched(int16_t *ref)
 {
-	EGG(ITEM(*ref)->extra)->flags |= EGG_HATCHED;
+	EGG(EXTRA_OF(*ref))->flags |= EGG_HATCHED;
 }
 
 void Egg_clearHatched(int16_t *ref)
 {
-	EGG(ITEM(*ref)->extra)->flags &= ~EGG_HATCHED;
+	EGG(EXTRA_OF(*ref))->flags &= ~EGG_HATCHED;
 }
