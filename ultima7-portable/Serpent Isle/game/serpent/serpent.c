@@ -23,6 +23,10 @@ enum {
 	DO_MENU_M = 10
 };
 
+/* Host alignment: under the game's packing these pointers could land at odd addresses, which
+ * the TOS loader refuses to relocate. */
+#pragma pack(push)
+#pragma pack()
 static const struct {
 	const char *name;
 	int16_t (*main)(int16_t argc, char **argv);
@@ -32,6 +36,7 @@ static const struct {
 	{"intro", IntroMain},
 	{"endgame", EndgameMain},
 };
+#pragma pack(pop)
 
 /* given to intro and endgame */
 static const char Password[] = "hisss";
