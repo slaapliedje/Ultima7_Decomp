@@ -18,7 +18,10 @@ extern uint32_t LinearSize;
  * Later calls do nothing. */
 void InitLinearMemory(uint32_t size);
 
+/* The game uses about 2 MB of it; a port short of memory may build with a smaller arena. */
+#ifndef LINEAR_MEMORY_SIZE
 #define LINEAR_MEMORY_SIZE (UINT32_C(32) << 20)
+#endif
 
 /* The 320x200 screen buffer, inside the arena. */
 uint8_t *ScreenPixels(void);
