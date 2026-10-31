@@ -149,7 +149,7 @@ void ProduceItemDisplayName(char *out, uint16_t type, uint8_t quantity, int16_t 
 /* bark the name of the item PickWorldItem returns */
 void LookAtItem(void)
 {
-	int16_t obj;
+	int16_t obj = 0;       /* PickWorldItem sets it only on an item; the original read it unset */
 	uint8_t quantity;
 	int16_t type, frame;
 	uint8_t counted;

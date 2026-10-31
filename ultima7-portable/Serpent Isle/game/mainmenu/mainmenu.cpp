@@ -919,6 +919,8 @@ void WriteGameArgs(char *name, int8_t sex)
 {
 	RestoreSystem(0, 1);
 	char *args = new char[GAME_ARGS_SIZE];
+
+	memset(args, 0, GAME_ARGS_SIZE);    /* the original wrote what followed the name too */
 	{
 		DataFile file("gameargs.dat", FILE_CREATE);
 		int16_t length = strlen(name);

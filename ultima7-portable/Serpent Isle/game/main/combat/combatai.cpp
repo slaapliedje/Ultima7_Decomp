@@ -751,10 +751,11 @@ void TakeCombatTurn(NPCRef *npc)
 	}
 	if ((uint8_t) (NPC(npc)->typeFlags & 0x10) && RollChance(4)) {
 		z = Item_getZ(npc);
+		/* the original set it only in the else, and checked the step with it unset otherwise */
+		height = gItemTypeInfo[TYPE(ITEM(npc->off))].height;
 		if (RollChance(3))
 			dz = RollChance(2) ? 1 : -1;
 		else {
-			height = gItemTypeInfo[TYPE(ITEM(npc->off))].height;
 			targetMiddle = Item_getZ(&target) + gItemTypeInfo[TYPE(ITEM(target.off))].height - height / 2;
 			if (z < targetMiddle)
 				dz = 1;

@@ -692,6 +692,8 @@ static void ShowDesk(int16_t ticks, int16_t captionTicks, int16_t panTicks, int1
 	screen.paint(-1, 0);
 	palette.apply();
 	MovingSprite map(DataPath(StaticPath, "endshape.flx"), ENDSHAPE_MAP, 0, &screen, 0);
+	/* hidden until placed: the original painted it from unset coordinates, off screen by luck */
+	map.visible = 0;
 	MovingSprite topRight(DataPath(StaticPath, "endshape.flx"), ENDSHAPE_MONITOR_TOP_RIGHT, 0, &screen, 0);
 	MovingSprite bottomRight(DataPath(StaticPath, "endshape.flx"), ENDSHAPE_MONITOR_BOTTOM_RIGHT, 0, &screen, 0);
 	MovingSprite title(DataPath(StaticPath, "endshape.flx"), ENDSHAPE_MONITOR_TITLE, 0, &screen, 0);
@@ -835,6 +837,7 @@ static void ShowDesk(int16_t ticks, int16_t captionTicks, int16_t panTicks, int1
 		longTime.drawn = 0;
 		map.x = 319;
 		map.y = -1;
+		map.visible = 1;
 		topLeft.slideBy(-194, 0, 0, 0, 3234 / SpeedDivisor);
 		topRight.slideBy(-194, 0, 0, 0, 3234 / SpeedDivisor);
 		bottomLeft.slideBy(-194, 0, 0, 0, 3234 / SpeedDivisor);

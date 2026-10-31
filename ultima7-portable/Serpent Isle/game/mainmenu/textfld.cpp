@@ -48,6 +48,7 @@ TextField::TextField()
 	cursor = 0;
 	length = 0;
 	keys = 0;
+	active = 0;     /* the original left it unset: the cursor showed or not by chance */
 }
 
 TextField::TextField(int16_t bufferSize, KeyQueue *queue)
@@ -69,6 +70,7 @@ void TextField::reset(char *buffer, int16_t bufferSize, KeyQueue *queue)
 	length = 0;
 	locked = 0;
 	cursorVisible = 1;
+	active = 0;
 	keys = queue;
 	Timer_set(&cursorTimer, CURSOR_BLINK_TICKS);
 }
