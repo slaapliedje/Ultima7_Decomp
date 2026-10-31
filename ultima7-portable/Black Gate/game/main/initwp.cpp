@@ -65,11 +65,10 @@ void InitRolandVoices(void)
 		VoiceSlots[i].number = first++;
 		VoiceSlots[i].voice = RolandVoiceNumbers[i] - 1;
 		VoiceSlots[i].sound = -1;
-		VoiceSlots[i].next = &VoiceSlots[i + 1];
-		VoiceSlots[i].previous = &VoiceSlots[i - 1];
+		/* a ring; the original formed the pointer before the first slot and fixed it after */
+		VoiceSlots[i].next = &VoiceSlots[(i + 1) % 32];
+		VoiceSlots[i].previous = &VoiceSlots[(i + 31) % 32];
 	}
-	VoiceSlots[0].previous = &VoiceSlots[31];
-	VoiceSlots[31].next = &VoiceSlots[0];
 	VoiceSlotHead = VoiceSlots;
 }
 

@@ -26,6 +26,12 @@ struct Fade {
 	int16_t steps;              /* ticks left */
 	int16_t rate;
 	Fade() { accum = period = 0; step = 0; steps = rate = 0; active = 0; }
+	/* The original copied palettes with their fade, work arrays and all: a local copy's
+	 * destructor then freed the arrays its source still used, and later fades worked in freed
+	 * memory and freed it again. A copy now starts without arrays, and an assignment keeps its
+	 * own; prepare allocates them as needed. */
+	Fade(const Fade &) { accum = period = 0; step = 0; steps = rate = 0; active = 0; }
+	Fade &operator=(const Fade &) { return *this; }
 	~Fade() { release(); }
 	int16_t prepare(uint8_t *from, uint8_t *to, int16_t count, int16_t ticks, int16_t unused);
 	int16_t advance();

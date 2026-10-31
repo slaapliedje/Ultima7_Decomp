@@ -73,6 +73,15 @@ struct ViewRecord {
 /* rebuilds an object in storage it already has */
 #include <new>
 
+/* A long shifted left as Borland's helper did it: by the count's low byte, and to 0 from 32 on.
+ * The count here can be negative, which C leaves undefined and the 68030 and x86 differ on. */
+static int32_t BorlandShiftLeft(int32_t value, int16_t count)
+{
+	uint8_t n = (uint8_t) count;
+
+	return n < 32 ? (int32_t) ((uint32_t) value << n) : 0;
+}
+
 struct NpcView : ViewRecord {
 	NpcView() : ViewRecord() {}
 	NpcView(objref r);
@@ -164,8 +173,8 @@ void SetItemExtent(ShapeExtent *box, objref r, uint8_t x, uint8_t y)
 	box->x = x;
 	box->y = y;
 	box->z = (int16_t)Item_getZ(&r);
-	box->xMask = (int32_t) CellSpanMasks[GetFootprintX(typeFrame)] << (box->x - ITEM(r)->position.world.x);
-	box->yMask = (int32_t) CellSpanMasks[GetFootprintY(typeFrame)] << (box->y - ITEM(r)->position.world.y);
+	box->xMask = BorlandShiftLeft(CellSpanMasks[GetFootprintX(typeFrame)], box->x - ITEM(r)->position.world.x);
+	box->yMask = BorlandShiftLeft(CellSpanMasks[GetFootprintY(typeFrame)], box->y - ITEM(r)->position.world.y);
 	box->zMask = HeightMask(typeFrame, box->z);
 	if (!ContactFound)
 		ContactItem = r;
@@ -180,8 +189,8 @@ int16_t CompareItemExtent(ShapeExtent *box, objref r)
 	uint16_t mask;
 
 	z = (int16_t)Item_getZ(&r);
-	across = (int32_t) CellSpanMasks[GetFootprintX(typeFrame)] << (box->x - ITEM(r)->position.world.x);
-	down = (int32_t) CellSpanMasks[GetFootprintY(typeFrame)] << (box->y - ITEM(r)->position.world.y);
+	across = BorlandShiftLeft(CellSpanMasks[GetFootprintX(typeFrame)], box->x - ITEM(r)->position.world.x);
+	down = BorlandShiftLeft(CellSpanMasks[GetFootprintY(typeFrame)], box->y - ITEM(r)->position.world.y);
 	mask = HeightMask(typeFrame, z);
 	if (box->xMask <= across && box->yMask <= down && box->zMask <= mask) {
 		if (!ContactFound && (across & box->xMask) && (down & box->yMask) && (box->zMask & mask)) {
@@ -315,7 +324,9 @@ uint8_t PlaceItem(objref *ref, CellCoord x, CellCoord y)
 					for (row = 0; row < height; row++) {
 						mapX = startX;
 						for (column = 0; column < width; column++) {
-							if ((uint8_t)gItemTypeInfo[CellBuffer[mapY][mapX] & 0x3ff].field) {
+							/* the NPC may stand partly outside the window: the original read past it */
+							if (mapX >= 0 && mapX < CELL_WINDOW && mapY >= 0 && mapY < CELL_WINDOW
+								&& (uint8_t)gItemTypeInfo[CellBuffer[mapY][mapX] & 0x3ff].field) {
 								hazard = 1;
 								break;
 							}

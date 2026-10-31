@@ -304,7 +304,8 @@ void UC_Interpret(UsecodeRoutine *code, ValueStack *stack, CallStack *calls, cha
 			case OP_CALL:
 			case OP_CALL_ITEM:
 				func = NEXT_WORD();
-				id = LinkedRoutines[func].id;
+				/* for a debug message only; the original read past the table for most */
+				id = func < LINKED_ROUTINE_COUNT ? LinkedRoutines[func].id : func;
 				SAVE(item);
 				SAVE(code->position);
 				SAVE(text);

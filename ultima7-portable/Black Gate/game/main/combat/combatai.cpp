@@ -1065,6 +1065,9 @@ uint8_t FleeStep(objref *npc, int8_t panic, int8_t spend, int8_t mayTeleport)
 	GetNpcIbo(&target, GetCombatTarget(npc));
 	first = GenerateRandomIntegerInRange(3);
 	dir = GetDirectionTo(npc, target);
+	/* 255 on the target's own tile, or with none: the original then read past FleeDirections */
+	if (dir >= 8)
+		dir = (uint8_t) first;
 	RemoveTypeFromCollision(*npc);
 	for (i = 0; i < 3; i++) {
 		step = FleeDirections[dir][first + i];
