@@ -881,12 +881,12 @@ void ShowDebugMenu(void)
 					break;
 				}
 			}
-			if (!item.valid())
-				break;
 			if (i == 10) {
 				ConsoleShowMessage(GetGameText(5, 136));
 				break;
 			}
+			if (!item.valid())
+				break;
 			number = PromptForIntegerWord(GetGameText(5, 137));
 			if (number == -1) {
 				Item_delete(&item);
