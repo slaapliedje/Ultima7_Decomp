@@ -161,7 +161,8 @@ String &String::operator=(char *s)
 	str = allocate(len + 1);
 	if (str == 0)
 		ReportError(0x7302);
-	_fstrcpy(str, s);
+	if (str != s)       /* both EmptyString when s is it: a copy onto itself */
+		_fstrcpy(str, s);
 	return *this;
 }
 

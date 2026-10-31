@@ -84,7 +84,7 @@ uint16_t DataCache::discard()
 	if (used != 0) {
 		n = ((RecordHeader *)buf)->len + sizeof(RecordHeader);
 		used -= n;
-		memcpy(buf, buf + n, used);
+		memmove(buf, buf + n, used);     /* overlaps: Borland's memcpy copied forward, as this does */
 	}
 	return n;
 }

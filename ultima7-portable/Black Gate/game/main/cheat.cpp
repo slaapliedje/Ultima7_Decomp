@@ -784,6 +784,7 @@ void ShowDebugMenu(void)
 	char buf[4];
 	NPCRef who;
 	objref target;
+	TypeFrame created;
 	uint8_t sx, sy, region;
 	Coord x, y;
 	int8_t key;
@@ -861,10 +862,14 @@ void ShowDebugMenu(void)
 				ConsoleShowMessage(GetGameText(5, 134));
 				break;
 			}
+			/* the original checked the spot with the type of the item not yet made: whatever the
+			 * stack held, so the item landed elsewhere by chance */
+			created = TypeFrame(number);
+			item = 0;
 			for (i = 0; i < 10; i++) {
 				if (CanWalkAt(Coord(Item_getX(AvatarRef).value + DirDeltaX[GetFacing(&AvatarRef)] * i),
 					Coord(Item_getY(AvatarRef).value + DirDeltaY[GetFacing(&AvatarRef)]),
-					Item_getZ(&AvatarRef), item.ptr()->typeFrame)) {
+					Item_getZ(&AvatarRef), created)) {
 					if (CreateItem(&item, number,
 						Coord(Item_getX(AvatarRef).value + DirDeltaX[GetFacing(&AvatarRef)] * i),
 						Coord(Item_getY(AvatarRef).value + DirDeltaY[GetFacing(&AvatarRef)]),
