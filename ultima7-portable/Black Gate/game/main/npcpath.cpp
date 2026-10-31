@@ -303,6 +303,8 @@ Route::Route(objref who, Coord x, Coord y, int8_t z, int8_t buildPath, int8_t av
 	hold = holdDoor;
 	tracked.off = 0;
 	cachedValid = 0;
+	/* saved even when not valid: the original wrote whatever was in memory */
+	memset(&cached, 0, sizeof cached);
 }
 
 /* Plans a walk from the actor to the destination, collecting waypoints. */
