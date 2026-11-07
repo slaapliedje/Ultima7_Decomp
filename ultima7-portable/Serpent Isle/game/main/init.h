@@ -12,6 +12,7 @@ void FatalError(char *, ...);
 void AssertFail(char *, int16_t);
 void HaltWithMessage(char *, int16_t, char *, ...);
 void QuitToDos(void);
+void ShowTos(int16_t left, int16_t top);
 #else
 void FatalError(char *, ...);
 #endif

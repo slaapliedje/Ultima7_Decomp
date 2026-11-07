@@ -14,6 +14,7 @@
 #include "objref.h"
 #include "gumps.h"
 #include "lsgump.h"
+#include "init.h"
 #include "npcshape.h"
 #include "itable.h"
 #include "mevent.h"
@@ -167,6 +168,8 @@ uint8_t DoYesNoDialog(int16_t message)
 	SelectMouseCursor(0);
 	PlaySoundSimple(94);
 	dialog.paint(&Viewport);
+	if (message == 0)
+		ShowTos(dialog.x + 87, dialog.y + 20);
 	SetFixedPalette(0);
 	CopyFrameBuffer();
 	while (action == 0) {

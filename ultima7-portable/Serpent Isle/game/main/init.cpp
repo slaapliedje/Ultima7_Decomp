@@ -32,6 +32,7 @@
 #include "vidmode.h"
 #include "creeper.h"
 #include "screen.h"
+#include "arena.h"
 #include "init.h"
 #include "worldpal.h"
 #include "gtimer.h"
@@ -190,6 +191,28 @@ extern "C" void InitEnvironment(void)
 extern "C" void ShutDown(void)
 {
 	RestoreSystem();
+}
+
+/* The question whether to leave is a picture saying "exit to DOS?". Here that is TOS, so its D,
+ * when the picture has one at this place, becomes a T of the same colours. */
+void ShowTos(int16_t left, int16_t top)
+{
+	static const char D[7][6] = {"####.", "##.##", "##.##", "##.##", "##.##", "##.##", "####."};
+	static const char T[7][6] = {"#####", ".##..", ".##..", ".##..", ".##..", ".##..", ".##.."};
+	uint8_t *rows[7];
+	uint8_t ink, paper;
+
+	for (int16_t i = 0; i < 7; i++)
+		rows[i] = LINEAR(GetRowAddress(top + i, Viewport.rowTable.get())) + left;
+	ink = rows[0][0];
+	paper = rows[0][4];
+	for (int16_t i = 0; i < 7; i++)
+		for (int16_t j = 0; j < 5; j++)
+			if (rows[i][j] != (D[i][j] == '#' ? ink : paper))
+				return;
+	for (int16_t i = 0; i < 7; i++)
+		for (int16_t j = 0; j < 5; j++)
+			rows[i][j] = T[i][j] == '#' ? ink : paper;
 }
 
 void QuitToDos(void)

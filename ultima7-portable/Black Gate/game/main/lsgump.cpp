@@ -4,6 +4,9 @@
  */
 
 #include "u7port.h"
+#include "arena.h"
+#include "lowlevel.h"
+#include "view.h"
 #include <new>
 #include "plat.h"
 #include <string.h>
@@ -149,6 +152,28 @@ void YesNoGump::moveTo(int16_t nx, int16_t ny)
 	message.moveTo(x + 125, y + 33);
 }
 
+/* The question whether to leave is a picture saying "exit to DOS?". Here that is TOS, so its D,
+ * when the picture has one at this place, becomes a T of the same colours. */
+static void ShowTos(View *target, int16_t left, int16_t top)
+{
+	static const char D[7][6] = {"####.", "##.##", "##.##", "##.##", "##.##", "##.##", "####."};
+	static const char T[7][6] = {"#####", ".##..", ".##..", ".##..", ".##..", ".##..", ".##.."};
+	uint8_t *rows[7];
+	uint8_t ink, paper;
+
+	for (int16_t i = 0; i < 7; i++)
+		rows[i] = LINEAR(GetRowAddress(top + i, target->rowTable)) + left;
+	ink = rows[0][0];
+	paper = rows[0][4];
+	for (int16_t i = 0; i < 7; i++)
+		for (int16_t j = 0; j < 5; j++)
+			if (rows[i][j] != (D[i][j] == '#' ? ink : paper))
+				return;
+	for (int16_t i = 0; i < 7; i++)
+		for (int16_t j = 0; j < 5; j++)
+			rows[i][j] = T[i][j] == '#' ? ink : paper;
+}
+
 void YesNoGump::draw(View *target)
 {
 	Sprite::draw(target);
@@ -166,6 +191,8 @@ uint8_t DoYesNoDialog(int16_t message)
 	SelectMouseCursor(0);
 	PlaySoundSimple(14);
 	dialog.paint(&Viewport);
+	if (message == 0)
+		ShowTos(&Viewport, dialog.x + 87, dialog.y + 20);
 	SetFixedPalette(0);
 	CopyFrameBuffer();
 	while (action == 0) {
