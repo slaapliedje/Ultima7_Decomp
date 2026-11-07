@@ -87,7 +87,8 @@ void CopyFrameBuffer(void)
 		ShapeManager_draw(&gShapeManager, &Viewport, 159, 99, 1034, 0, 0, 0);
 	CursorTracking = 0;
 	DrawCursorInto(&Viewport);
-	plat_video_wait_retrace();
+	/* The DOS game waited for the retrace here so the copy wouldn't tear; plat_video_present
+	 * shows the frame at a retrace itself, so waiting only idles. */
 	CopyingFrame = 1;
 	CopyScreen(GetRowAddress(0, Viewport.rowTable), GetRowAddress(0, ScreenView.rowTable));
 	if (!PlayerActionSuspended && GameScreen.fading == 0) {

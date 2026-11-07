@@ -122,6 +122,9 @@ int16_t plat_cursor_is_hardware(void);
 void plat_cursor_set_shape(const uint8_t *pixels, int16_t width, int16_t height,
 	int16_t hot_x, int16_t hot_y);
 void plat_cursor_show(int16_t visible);
+/* The game moved its own pointer on the screen it last presented, changing only rows top to
+ * bottom: from the mouse handler, the backend then shows just those rows again. */
+void plat_cursor_rows_drawn(int16_t top, int16_t bottom);
 
 /* ---- Files ----
  * Names are the game's DOS names ("STATIC\\SHAPES.VGA"), resolved against the data directory

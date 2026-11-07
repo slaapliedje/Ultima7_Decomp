@@ -198,8 +198,14 @@ void MoveCursorHook(int16_t events, int16_t buttons, int16_t x, int16_t y)
 {
 	if (CursorDrawn != 0) {
 		if (CursorTracking != 0) {
+			int16_t top = CursorRect.y0, bottom = CursorRect.y1;
+
 			EraseCursor();
 			DrawCursorAt(x >> 1, y);
+			/* the rows erased and drawn in, so the host need not look at the rest */
+			if (CursorTarget != 0)
+				plat_cursor_rows_drawn(top < CursorRect.y0 ? top : CursorRect.y0,
+					bottom > CursorRect.y1 ? bottom : CursorRect.y1);
 		}
 	}
 }

@@ -93,6 +93,7 @@ extern le_int16 ChunkItemLists[4][16][16];
 extern int16_t FindRegionSlot(Loc, Loc);
 extern Coord Item_getX(objref &);
 extern Coord Item_getY(objref &);
+extern void Item_getXAndY(objref &, int16_t *, int16_t *);
 extern void Item_setFrame(objref *, int16_t);
 extern void Item_setLocationKind(objref *, uint8_t);
 extern void Item_setRegion(objref *, uint8_t);
@@ -434,9 +435,13 @@ int8_t AreaScan::next()
 			current = ITEM(current)->next;
 		started = 0;
 		if (nextChunk()) {
-			if ((uint16_t)(GetDelta(Item_getX(current), x)) >= width)
+			Coord itemX, itemY;
+
+			/* both at once: each lookup finds the item's region and container again */
+			Item_getXAndY(current, &itemX.value, &itemY.value);
+			if ((uint16_t)(GetDelta(itemX, x)) >= width)
 				continue;
-			if ((uint16_t)(GetDelta(Item_getY(current), y)) >= height)
+			if ((uint16_t)(GetDelta(itemY, y)) >= height)
 				continue;
 			if ((z = (int16_t)Item_getZ(&current)) >= bottomZ && z <= topZ)
 				break;
@@ -482,9 +487,12 @@ uint8_t RenderOrder::addItem(objref r)
 	uint16_t type;
 
 	if (r.valid()) {
-		if ((uint16_t)(GetDelta(Item_getX(r), RenderOriginX)) >= RenderBoxWidth)
+		Coord itemX, itemY;
+
+		Item_getXAndY(r, &itemX.value, &itemY.value);
+		if ((uint16_t)(GetDelta(itemX, RenderOriginX)) >= RenderBoxWidth)
 			return 1;
-		if ((uint16_t)(GetDelta(Item_getY(r), RenderOriginY)) >= RenderBoxHeight)
+		if ((uint16_t)(GetDelta(itemY, RenderOriginY)) >= RenderBoxHeight)
 			return 1;
 		z = (int16_t)Item_getZ(&r);
 		if ((uint16_t)z >= RenderMinZ && (uint16_t)z <= RenderMaxZ) {
