@@ -328,12 +328,25 @@ void PlayCombatMusic()
 
 void NoteCombatAlignment(int8_t) {}
 
+/* Bytes of an effect's timbre sent in each message. */
+#define SFX_TIMBRE_PIECE 32
+
+/* An MT-32 address, three bytes of 7 bits, moved on by count bytes. */
+static int32_t AdvanceMt32Address(int32_t address, int16_t count)
+{
+	int32_t flat = ((address >> 16) & 0x7f) << 14 | ((address >> 8) & 0x7f) << 7 | (address & 0x7f);
+
+	flat += count;
+	return (flat >> 14) << 16 | ((flat >> 7) & 0x7f) << 8 | (flat & 0x7f);
+}
+
 void LoadSfxPatch(uint8_t number)
 {
 	int32_t address;
 	VoiceSlot patch;
 	Flex file;
 	uint8_t data[246];
+	int16_t offset, count;
 
 	if (RolandSfxNotes[number].patch == 0) {
 		if (file.open(BuildPath(StaticPath, Mt32SfxFile, 0))) {
@@ -341,12 +354,22 @@ void LoadSfxPatch(uint8_t number)
 			file.close();
 			ClaimVoiceSlot(&patch, number);
 			RolandSfxNotes[number].patch = patch.voice + 1;
-			/* keep the music timer off the driver while the timbre is sent */
+			/* DOS sent the timbre as one message with the music timer kept off the driver:
+			 * 80 ms of MIDI, which stalled the music. Here each piece is a message of its
+			 * own, and the music tick runs between them. */
+			address = (patch.number << 9) + INT32_C(0x80000);
+			for (offset = 0; offset < 246; offset += count) {
+				count = 246 - offset < SFX_TIMBRE_PIECE ? 246 - offset : SFX_TIMBRE_PIECE;
+				plat_sound_lock();
+				MusicDevice = 0;
+				DriverSysexEntry(address, count, data + offset);
+				MusicDevice = MUSIC_DEVICE_MT32;
+				plat_sound_unlock();
+				address = AdvanceMt32Address(address, count);
+			}
 			plat_sound_lock();
 			MusicDevice = 0;
 			Mt32PatchEntry[1] = patch.number;
-			address = (patch.number << 9) + INT32_C(0x80000);
-			DriverSysexEntry(address, 246, data);
 			address = ((patch.voice << 3) & 0x7f) + (int32_t)((patch.voice << 4) & 0x7f00) + INT32_C(0x50000);
 			DriverSysexEntry(address, 8, Mt32PatchEntry);
 			MusicDevice = MUSIC_DEVICE_MT32;
