@@ -67,8 +67,9 @@ static uint32_t PreviousFrameTime = 0;
 
 void WaitForFrameTime(void)
 {
+	/* Sleeping, not yielding: a yield shows the frame again, and it was only just shown. */
 	while ((uint16_t)(TickCount - PreviousFrameTime) < FrameDelay)
-		plat_yield();
+		plat_sleep(1);
 	PreviousFrameTime = TickCount;
 }
 
