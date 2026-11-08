@@ -210,31 +210,63 @@ void WorldView::paintTerrain(int16_t x0, int16_t y0, int16_t x1, int16_t y1)
 	int16_t halfWidth = VIEW_HALF_WIDTH, halfHeight = VIEW_HALF_HEIGHT;
 	uint16_t *cell;
 	uint8_t animate;
+	/* Each tile type's frame as RendererState::frame gives it, worked out once a call: kind 0 not
+	 * looked at yet, 1 as drawn, 2 animated, its frame (frame + animationTick) % count, which is
+	 * frame + step folded once into count while frame < count and the tick is not about to wrap. */
+	uint8_t kind[FIRST_OBJECT_TYPE];
+	uint16_t step[FIRST_OBJECT_TYPE], count[FIRST_OBJECT_TYPE];
+	uint16_t tick = renderer.animationTick;
+	uint8_t folds = (uint16_t)(tick + 32) > tick;
+	int16_t x, y, type = DrawType, frame = DrawFrameNumber;
 
+	memset(kind, 0, sizeof kind);
 	cell = CellBuffer[cellY + y0] + (cellX + x0);
 	skip = CELL_WINDOW - 1 - (x1 - x0);
-	/* zero offsets, still added */
-	x0 += 0;
-	y0 += 0;
-	x1 += 0;
-	y1 += 0;
 	DrawMirrored = 0;
 	DrawZOffset = 0;
 	DrawTranslucent = 0;
 	animate = GameTime.running() && !GameInput.isGumpMode();
-	for (DrawCellY = y0; DrawCellY <= y1; DrawCellY++) {
-		for (DrawCellX = x0; DrawCellX <= x1; DrawCellX++) {
-			DrawType = *cell & 0x3ff;
-			if (DrawType < FIRST_OBJECT_TYPE) {
-				DrawFrameNumber = renderer.frame(DrawType, (*cell & 0x7c00) >> 10);
-				renderer.shapes->drawTile(DrawType, DrawFrameNumber, DrawCellX, DrawCellY);
-				if (IsAmbient(DrawType) && animate)
-					PlayItemAmbientSound(DrawType, DrawFrameNumber, DrawCellX - halfWidth, DrawCellY - halfHeight);
+	for (y = y0; y <= y1; y++) {
+		for (x = x0; x <= x1; x++) {
+			type = *cell & 0x3ff;
+			if (type < FIRST_OBJECT_TYPE) {
+				frame = (*cell & 0x7c00) >> 10;
+				if (kind[type] == 0) {
+					if (!IsAnimated(type) || GetTypeAnimation(type) != 0) {
+						kind[type] = 1;
+					} else {
+						kind[type] = 2;
+						count[type] = (uint16_t)ShapeManager_getFrameCount(renderer.shapes, type);
+						step[type] = tick % count[type];
+					}
+				}
+				if (kind[type] == 2) {
+					if (folds && frame < count[type]) {
+						if ((frame += step[type]) >= count[type])
+							frame -= count[type];
+					} else {
+						frame = (uint16_t)(frame + tick) % count[type];
+					}
+				}
+				renderer.shapes->drawTile(type, frame, x, y);
+				if (IsAmbient(type) && animate) {
+					DrawType = type;
+					DrawFrameNumber = frame;
+					DrawCellX = x;
+					DrawCellY = y;
+					PlayItemAmbientSound(type, frame, x - halfWidth, y - halfHeight);
+				}
 			}
 			cell++;
 		}
 		cell += skip;
 	}
+	/* the drawing globals as the cell by cell loop left them */
+	DrawType = type;
+	DrawFrameNumber = frame;
+	if (y0 <= y1)
+		DrawCellX = x0 <= x1 ? x1 + 1 : x0;
+	DrawCellY = y0 <= y1 ? y1 + 1 : y0;
 }
 
 static ItemSnapshot snapshot;

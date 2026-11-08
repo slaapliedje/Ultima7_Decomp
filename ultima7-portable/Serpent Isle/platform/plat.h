@@ -99,6 +99,9 @@ void plat_sound_unlock(void);
 
 /* Shows a whole frame. pixels is 320x200, 320 bytes a row. */
 void plat_video_present(const uint8_t *pixels);
+/* Copies a whole frame from src to dst, which is presented next: a backend may prepare the
+ * frame for showing as it copies. */
+void plat_video_copy_frame(uint8_t *dst, const uint8_t *src);
 /* Palette entries as 6-bit VGA red, green, blue triples; applied with the next present. */
 void plat_video_set_palette(int16_t first, int16_t count, const uint8_t *rgb);
 /* Waits for the next 70 Hz display refresh, as the game's retrace wait did. */

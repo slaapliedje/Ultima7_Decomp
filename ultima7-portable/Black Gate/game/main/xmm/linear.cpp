@@ -6,6 +6,7 @@
 #include "u7port.h"
 #include "arena.h"
 #include "lowlevel.h"
+#include "plat.h"
 
 #define SCREEN_BYTES (320 * 200)
 
@@ -173,9 +174,10 @@ void FillScreen(uint8_t color)
 	memset(ScreenPixels(), color, SCREEN_BYTES);
 }
 
+/* The frame drawn behind the screen to the screen, which is presented next. */
 void CopyScreen(int32_t src, int32_t dst)
 {
-	memmove(LINEAR(dst), LINEAR(src), SCREEN_BYTES);
+	plat_video_copy_frame(LINEAR(dst), LINEAR(src));
 }
 
 void CopyScreenWords(int32_t src, int32_t dst)

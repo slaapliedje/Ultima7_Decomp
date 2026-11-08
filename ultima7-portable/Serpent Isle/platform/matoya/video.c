@@ -106,6 +106,11 @@ void plat_video_present(const uint8_t *pixels)
 	test_input_frame();
 }
 
+void plat_video_copy_frame(uint8_t *dst, const uint8_t *src)
+{
+	memmove(dst, src, PLAT_SCREEN_WIDTH * PLAT_SCREEN_HEIGHT);
+}
+
 uint8_t *video_screen(void)
 {
 	return (uint8_t *) last_pixels;
