@@ -42,6 +42,14 @@ int16_t UnusedItemGlobal;
 
 inline uint8_t GetLocationKind(ItemInfo &info) { return (int16_t)info.flags & 7; }
 inline int8_t IsContained(ItemInfo &info) { return GetLocationKind(info) >= LOCATION_CONTAINED; }
+
+uint8_t Item_getRegion(objref *ref);
+/* Item_getRegion, with the placement byte already read: the region slot for an item on the map
+ * without reading it again. Not for contained items. */
+inline uint8_t RegionOf(objref &ref, ItemInfo &info)
+{
+	return GetLocationKind(info) <= 3 ? LoadedRegions[GetLocationKind(info)] : Item_getRegion(&ref);
+}
 inline int8_t IsOnMap(ItemInfo &info) { return GetLocationKind(info) <= 3; }
 inline uint8_t IsEquipped(ItemInfo &info) { return info.kind() == LOCATION_EQUIPPED; }
 inline uint8_t GetLocationKind(ItemInfo &&info) { return GetLocationKind(info); }
@@ -99,7 +107,7 @@ Coord Item_getX(objref &ref)
 	if (IsContained(info)) {
 		return Item_getX(Item_getContainer(&ref));
 	} else {
-		result.value = ITEM(ref.off)->position.world.x + RegionX[Item_getRegion(&ref)].value;
+		result.value = ITEM(ref.off)->position.world.x + RegionX[RegionOf(ref, info)].value;
 		return result;
 	}
 }
@@ -114,7 +122,7 @@ Coord Item_getY(objref &ref)
 	if (IsContained(info)) {
 		return Item_getY(Item_getContainer(&ref));
 	} else {
-		result.value = ITEM(ref.off)->position.world.y + RegionY[Item_getRegion(&ref)].value;
+		result.value = ITEM(ref.off)->position.world.y + RegionY[RegionOf(ref, info)].value;
 		return result;
 	}
 }
@@ -129,10 +137,26 @@ void Item_getXAndY(objref &ref, int16_t *x, int16_t *y)
 		Item_getXAndY(Item_getContainer(&ref), x, y);
 	} else {
 		ItemRecord *record = ITEM(ref.off);
-		uint8_t region = Item_getRegion(&ref);
+		uint8_t region = RegionOf(ref, info);
 		*x = record->position.world.x + RegionX[region].value;
 		*y = record->position.world.y + RegionY[region].value;
 	}
+}
+
+void Item_getXYZ(objref &ref, int16_t *x, int16_t *y, int16_t *z)
+{
+	ItemInfo info = GetItemZAndStuff(&ref);
+
+	*z = info.z();
+	if (GetLocationKind(info) <= 3) {
+		/* on the map, as everything in the chunk lists is */
+		ItemRecord *record = ITEM(ref.off);
+		uint8_t region = LoadedRegions[GetLocationKind(info)];
+
+		*x = record->position.world.x + RegionX[region].value;
+		*y = record->position.world.y + RegionY[region].value;
+	} else
+		Item_getXAndY(ref, x, y);
 }
 
 ItemInfo GetItemZAndStuff(objref *ref)

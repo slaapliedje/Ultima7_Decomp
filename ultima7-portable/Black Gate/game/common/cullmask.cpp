@@ -103,9 +103,12 @@ void AddOccluder(int16_t off)
 		OccludersPresent = 1;
 		int16_t width = (GetFootprintX(shape) + 1) * 2;
 		int16_t height = (GetFootprintY(shape) + 1) * 2;
-		int16_t x = GetDelta(Item_getX(ref), OcclusionOriginX) * 2;
-		int16_t y = GetDelta(Item_getY(ref), OcclusionOriginY) * 2;
-		int16_t z = Item_getZ(&ref);
+		Coord itemX, itemY;
+		int16_t z;
+
+		Item_getXYZ(ref, &itemX.value, &itemY.value, &z);
+		int16_t x = GetDelta(itemX, OcclusionOriginX) * 2;
+		int16_t y = GetDelta(itemY, OcclusionOriginY) * 2;
 		x -= z + width - MASK_MARGIN;
 		y -= z + height - MASK_MARGIN;
 		int16_t top;
@@ -128,8 +131,11 @@ void AddOccluder(int16_t off)
 uint8_t IsItemOccluded(int16_t off, int8_t flag)
 {
 	objref ref = off;
+	Coord x, y;
+	int16_t z;
 
-	return IsOccludedAt(&ref, Item_getX(ref), Item_getY(ref), Item_getZ(&ref), flag);
+	Item_getXYZ(ref, &x.value, &y.value, &z);
+	return IsOccludedAt(&ref, x, y, z, flag);
 }
 
 /* Set up the box IsShapeHidden tests: the shape's footprint and height at x, y, z in mask cells. */

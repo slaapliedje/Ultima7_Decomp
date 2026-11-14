@@ -204,6 +204,12 @@ TypeFrame WorldView::getCellAt(Coord x, Coord y)
 			+ ((uint16_t)(int16_t)y & 15) * 32).word(((uint16_t)(int16_t)x & 15) * 2);
 }
 
+/* What each cell of the terrain picture (drawtile.cpp) holds: the tile's type and frame as a cell
+ * holds them, or NO_TILE. */
+#define NO_TILE 0xffff
+static uint16_t TerrainTiles[25][40];
+static ShapeManager *TerrainShapes;
+
 void WorldView::paintTerrain(int16_t x0, int16_t y0, int16_t x1, int16_t y1)
 {
 	int16_t skip;
@@ -218,8 +224,14 @@ void WorldView::paintTerrain(int16_t x0, int16_t y0, int16_t x1, int16_t y1)
 	uint16_t tick = renderer.animationTick;
 	uint8_t folds = (uint16_t)(tick + 32) > tick;
 	int16_t x, y, type = DrawType, frame = DrawFrameNumber;
+	uint8_t whole;
 
 	memset(kind, 0, sizeof kind);
+	whole = x0 == 0 && y0 == 0 && x1 == 39 && y1 == 24;
+	if (whole && TerrainShapes != renderer.shapes) {
+		memset(TerrainTiles, 0xff, sizeof TerrainTiles);
+		TerrainShapes = renderer.shapes;
+	}
 	cell = CellBuffer[cellY + y0] + (cellX + x0);
 	skip = CELL_WINDOW - 1 - (x1 - x0);
 	DrawMirrored = 0;
@@ -248,7 +260,12 @@ void WorldView::paintTerrain(int16_t x0, int16_t y0, int16_t x1, int16_t y1)
 						frame = (uint16_t)(frame + tick) % count[type];
 					}
 				}
-				renderer.shapes->drawTile(type, frame, x, y);
+				if (!whole) {
+					renderer.shapes->drawTile(type, frame, x, y);
+				} else if (TerrainTiles[y][x] != (uint16_t)(type | frame << 10)) {
+					renderer.shapes->drawTerrainTile(type, frame, x, y);
+					TerrainTiles[y][x] = type | frame << 10;
+				}
 				if (IsAmbient(type) && animate) {
 					DrawType = type;
 					DrawFrameNumber = frame;
@@ -256,11 +273,16 @@ void WorldView::paintTerrain(int16_t x0, int16_t y0, int16_t x1, int16_t y1)
 					DrawCellY = y;
 					PlayItemAmbientSound(type, frame, x - halfWidth, y - halfHeight);
 				}
+			} else if (whole) {
+				KeepTerrainTile(x, y);
+				TerrainTiles[y][x] = NO_TILE;
 			}
 			cell++;
 		}
 		cell += skip;
 	}
+	if (whole)
+		ShowTerrain();
 	/* the drawing globals as the cell by cell loop left them */
 	DrawType = type;
 	DrawFrameNumber = frame;
