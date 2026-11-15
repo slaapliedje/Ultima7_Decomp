@@ -6,6 +6,7 @@
 #include "activity.h"
 #include "typefram.h"
 #include "coord.h"
+#include "objref.h"
 
 struct NpcSaver;
 
@@ -113,7 +114,17 @@ inline uint8_t CreateNpc(objref *ref, TypeFrame &&shape, CellCoord x, CellCoord 
 {
 	return CreateNpc(ref, shape, x, y, z);
 }
-void GetNpcIbo(objref *ref, int16_t number);
+extern int16_t NpcItemRefs[NPC_COUNT];
+extern int16_t NpcRecordCount;
+extern int16_t ExtraNpcRecordCount;
+/* NPC number's item, or none. Inline: the game asks for every NPC's several times a frame. */
+inline void GetNpcIbo(objref *ref, int16_t number)
+{
+	if ((uint16_t)(NpcRecordCount + ExtraNpcRecordCount) > (uint16_t)number)
+		ref->off = NpcItemRefs[number];
+	else
+		ref->off = 0;
+}
 int16_t Item_getNpcNumber(objref *ref);
 uint8_t Npc_hasItemTarget(objref *ref);
 int16_t Npc_getItemTarget(objref *ref);

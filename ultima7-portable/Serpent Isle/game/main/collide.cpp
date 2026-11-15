@@ -211,11 +211,7 @@ void RemoveTypeFromCollision(objref item)
 
 void ClearCollisionBuffer()
 {
-	int16_t y, x;
-
-	for (y = 0; y < COLLISION_CELLS; y++)
-		for (x = 0; x < COLLISION_CELLS; x++)
-			SetCollisionCell(y, x, INT32_C(0));
+	ClearCollisionCells(COLLISION_CELLS, COLLISION_CELLS);
 }
 
 void AddChunkToCollision(CellCoord x, CellCoord y)

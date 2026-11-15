@@ -40,6 +40,15 @@ void SetCollisionCell(int16_t row, int16_t col, int32_t bits)
 	LinearPut32(CellAt(row, col), (uint32_t) bits);
 }
 
+/* Clears the first rows rows' first cols cells. */
+void ClearCollisionCells(int16_t rows, int16_t cols)
+{
+	int16_t row;
+
+	for (row = 0; row < rows; row++)
+		memset(LINEAR(CellAt(row, 0)), 0, (size_t)(uint16_t)cols * 4);
+}
+
 /* The OR of the cells in a block whose bottom-right corner is row, col, clipped at the grid's
  * top and left edges. Both extents are one less than the size. */
 int32_t OrCollisionBlock(int16_t row, int16_t col, int16_t rows, int16_t cols)

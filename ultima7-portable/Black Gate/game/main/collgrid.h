@@ -11,6 +11,7 @@ int8_t IsCollisionBlockSet(int16_t row, int16_t col, int16_t rows, int16_t cols,
 void OrCollisionCell(int16_t row, int16_t col, int32_t bits);
 void AndCollisionCell(int16_t row, int16_t col, int32_t bits);
 void SetCollisionCell(int16_t row, int16_t col, int32_t bits);
+void ClearCollisionCells(int16_t rows, int16_t cols);
 #ifdef __cplusplus
 }
 #endif

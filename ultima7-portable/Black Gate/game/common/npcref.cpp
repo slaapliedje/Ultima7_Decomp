@@ -304,14 +304,6 @@ void Item_moveOffMap(objref *ref)
 		PlaceItemOffMap(ref);
 }
 
-void GetNpcIbo(objref *ref, int16_t number)
-{
-	if ((uint16_t)(NpcRecordCount + ExtraNpcRecordCount) > (uint16_t)number)
-		ref->off = NpcItemRefs[number];
-	else
-		ref->off = 0;
-}
-
 int16_t Item_getNpcNumber(objref *ref)
 {
 	int16_t extra;

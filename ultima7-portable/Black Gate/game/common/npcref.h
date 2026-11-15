@@ -22,7 +22,6 @@ struct NPCRef : objref {
 };
 
 void Item_moveOffMap(objref *ref);
-void GetNpcIbo(objref *ref, int16_t number);
 uint8_t Npc_isMale(objref *ref);
 
 void Npc_freeNumber(objref *ref);
