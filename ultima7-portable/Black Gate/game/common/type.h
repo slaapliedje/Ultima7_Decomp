@@ -32,10 +32,19 @@ int16_t GetTypeAnimation(uint16_t type);
 
 /* A type's footprint, x and y swapped when flipped. C++ callers pass the word as a TypeFrame. */
 #ifdef __cplusplus
-struct TypeFrame;
-extern "C" {
-uint16_t GetFootprintX(TypeFrame &typeFrame);
-uint16_t GetFootprintY(TypeFrame &typeFrame);
+#include "typefram.h"
+/* typedim.c's, inline: the item sort calls them thousands of times a frame. */
+inline uint16_t GetFootprintX(TypeFrame &typeFrame)
+{
+	TypeInfo &info = gItemTypeInfo[typeFrame.bits & 0x3ff];
+
+	return typeFrame.bits & 0x8000 ? info.footprintY : info.footprintX;
+}
+inline uint16_t GetFootprintY(TypeFrame &typeFrame)
+{
+	TypeInfo &info = gItemTypeInfo[typeFrame.bits & 0x3ff];
+
+	return typeFrame.bits & 0x8000 ? info.footprintX : info.footprintY;
 }
 inline uint16_t GetFootprintX(TypeFrame &&typeFrame) { return GetFootprintX(typeFrame); }
 inline uint16_t GetFootprintY(TypeFrame &&typeFrame) { return GetFootprintY(typeFrame); }

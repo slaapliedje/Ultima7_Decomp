@@ -62,8 +62,15 @@ void StoreNpcViewRecord(int32_t *address, int16_t index, NpcView *record)
 
 NpcBuffer * GetNpcBufferForIbo(objref *ref)
 {
-	if (ref->valid() && IS_NPC(ITEM(ref->off)))
-		return GetCachedNpcBuffer(&NpcPool, Item_getNpcNumber(ref));
+	if (ref->valid() && IS_NPC(ITEM(ref->off))) {
+		int16_t npc = Item_getNpcNumber(ref);
+		uint8_t slot = NpcSlotOf[npc];
+
+		/* GetCachedNpcBuffer's answer for an NPC already in the cache, without the call */
+		if (slot != 255)
+			return NpcCacheBuffers + slot;
+		return GetCachedNpcBuffer(&NpcPool, npc);
+	}
 	return &NullNpcBuffer;
 }
 

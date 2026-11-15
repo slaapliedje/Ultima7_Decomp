@@ -20,6 +20,19 @@ struct Coord;
 struct CellCoord;
 extern "C" int16_t CompareWorldCoords(Coord *, Coord *);
 
+/* CompareWorldCoords (coord.c) for the operators below, inline: the item sort calls it thousands
+ * of times a frame. */
+inline int16_t WorldDelta(int16_t a, int16_t b)
+{
+	int16_t v = a - b;
+
+	if (v < 0)
+		v += WORLD_SIZE;
+	if (v >= WORLD_SIZE / 2)
+		v -= WORLD_SIZE;
+	return v;
+}
+
 /* A world x or y, wrapped into 0..3071. */
 struct Coord {
 	int16_t value;
@@ -34,7 +47,7 @@ struct Coord {
 	Coord operator+(int32_t n) { Coord c(value + n); return c; }
 	Coord operator-(int32_t n) { Coord c(value - n); return c; }
 	/* how far this lies past other, the short way round */
-	int16_t operator-(Coord other) { return CompareWorldCoords(this, &other); }
+	int16_t operator-(Coord other) { return WorldDelta(value, other.value); }
 	int8_t operator<(CellCoord other);
 	int8_t operator<=(CellCoord other);
 	int8_t operator>(CellCoord other);
@@ -63,10 +76,10 @@ struct CellCoord : Coord {
 };
 
 /* Order along the wrapping map; the right side is copied, so a sum is wrapped, then copied. */
-inline int8_t Coord::operator<(CellCoord other) { return CompareWorldCoords(this, &other) < 0; }
-inline int8_t Coord::operator<=(CellCoord other) { return CompareWorldCoords(this, &other) <= 0; }
-inline int8_t Coord::operator>(CellCoord other) { return CompareWorldCoords(this, &other) > 0; }
-inline int8_t Coord::operator>=(CellCoord other) { return CompareWorldCoords(this, &other) >= 0; }
+inline int8_t Coord::operator<(CellCoord other) { return WorldDelta(value, other.value) < 0; }
+inline int8_t Coord::operator<=(CellCoord other) { return WorldDelta(value, other.value) <= 0; }
+inline int8_t Coord::operator>(CellCoord other) { return WorldDelta(value, other.value) > 0; }
+inline int8_t Coord::operator>=(CellCoord other) { return WorldDelta(value, other.value) >= 0; }
 
 /* A world coordinate wrapped into 0..3071. */
 inline int16_t WrapCoord(int16_t v) { v = (v + WORLD_SIZE) % WORLD_SIZE; return v; }
@@ -76,7 +89,7 @@ inline int16_t GetSign(int16_t d) { if (d == 0) return 0; if (d < 0) return -1; 
 inline int16_t GetMagnitude(int16_t d) { return d < 0 ? -d : d; }
 
 /* How far a lies past b, on the wrapping map. */
-inline int16_t GetDelta(Coord &a, Coord b) { return CompareWorldCoords(&a, &b); }
+inline int16_t GetDelta(Coord &a, Coord b) { return WorldDelta(a.value, b.value); }
 inline int16_t GetDelta(Coord &&a, Coord b) { return GetDelta(a, b); }
 
 /* Flat and height-aware distance between two map points. */
