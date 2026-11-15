@@ -150,6 +150,11 @@ public:
 		find(type);
 		DrawTile(cur->data + (frame << 6), x, y);
 	}
+	void drawTerrainTile(int16_t type, int16_t frame, int16_t x, int16_t y)
+	{
+		find(type);
+		DrawTerrainTile(cur->data + (frame << 6), x, y);
+	}
 };
 
 extern void ShapeManager_reloadFrame(ShapeManager *, int16_t);

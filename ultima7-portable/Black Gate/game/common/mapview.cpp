@@ -203,6 +203,12 @@ TypeFrame WorldView::getCellAt(Coord x, Coord y)
 			+ ((uint16_t)(int16_t)y & 15) * 32).word(((uint16_t)(int16_t)x & 15) * 2);
 }
 
+/* What each cell of the terrain picture (drawtile.cpp) holds, by its column and row there: the
+ * tile type, and its frame times 256; or NO_TILE. */
+#define NO_TILE 0xffff
+static uint16_t TerrainTiles[25][40];
+static ShapeManager *TerrainShapes;
+
 void WorldView::paintTerrain(int16_t x0, int16_t y0, int16_t x1, int16_t y1)
 {
 	int16_t skip;
@@ -217,8 +223,19 @@ void WorldView::paintTerrain(int16_t x0, int16_t y0, int16_t x1, int16_t y1)
 	uint16_t tick = renderer.animationTick;
 	uint8_t folds = (uint16_t)(tick + 32) > tick;
 	int16_t x, y, type = DrawType, frame = DrawFrameNumber;
+	uint8_t whole;
+	int16_t column0 = 0, column = 0, row = 0;
 
 	memset(kind, 0, sizeof kind);
+	whole = x0 == 0 && y0 == 0 && x1 == 39 && y1 == 24;
+	if (whole && TerrainShapes != renderer.shapes) {
+		memset(TerrainTiles, 0xff, sizeof TerrainTiles);
+		TerrainShapes = renderer.shapes;
+	}
+	if (whole) {
+		column0 = (uint16_t)((int16_t)centerX - halfWidth) % 40;
+		row = (uint16_t)((int16_t)centerY - halfHeight) % 25;
+	}
 	cell = CellBuffer[cellY + y0] + (cellX + x0);
 	skip = CELL_WINDOW - 1 - (x1 - x0);
 	DrawMirrored = 0;
@@ -226,6 +243,7 @@ void WorldView::paintTerrain(int16_t x0, int16_t y0, int16_t x1, int16_t y1)
 	DrawTranslucent = 0;
 	animate = GameTime.running() && !GameInput.isGumpMode();
 	for (y = y0; y <= y1; y++) {
+		column = column0;
 		for (x = x0; x <= x1; x++) {
 			type = *cell & 0x3ff;
 			if (type < FIRST_OBJECT_TYPE) {
@@ -247,7 +265,12 @@ void WorldView::paintTerrain(int16_t x0, int16_t y0, int16_t x1, int16_t y1)
 						frame = (uint16_t)(frame + tick) % count[type];
 					}
 				}
-				renderer.shapes->drawTile(type, frame, x, y);
+				if (!whole) {
+					renderer.shapes->drawTile(type, frame, x, y);
+				} else if (TerrainTiles[row][column] != (uint16_t)(type | frame << 8)) {
+					renderer.shapes->drawTerrainTile(type, frame, column, row);
+					TerrainTiles[row][column] = type | frame << 8;
+				}
 				if (IsAmbient(type) && animate) {
 					DrawType = type;
 					DrawFrameNumber = frame;
@@ -255,11 +278,20 @@ void WorldView::paintTerrain(int16_t x0, int16_t y0, int16_t x1, int16_t y1)
 					DrawCellY = y;
 					PlayItemAmbientSound(type, frame, x - halfWidth, y - halfHeight);
 				}
+			} else if (whole) {
+				KeepTerrainTile(x, y, column, row);
+				TerrainTiles[row][column] = NO_TILE;
 			}
 			cell++;
+			if (++column == 40)
+				column = 0;
 		}
 		cell += skip;
+		if (++row == 25)
+			row = 0;
 	}
+	if (whole)
+		ShowTerrain(column0, row);
 	/* the drawing globals as the cell by cell loop left them */
 	DrawType = type;
 	DrawFrameNumber = frame;

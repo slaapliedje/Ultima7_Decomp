@@ -29,6 +29,63 @@ void DrawTile(int32_t tile, int16_t x, int16_t y)
 	}
 }
 
+/* The terrain as paintTerrain last drew it, without the items over it: 40x25 tiles, each at its
+ * world cell's column modulo 40 and row modulo 25, so the picture wraps round and a view that
+ * scrolls finds most of its tiles already there. A tile goes in only when it differs from the one
+ * there, and the picture is then copied into the viewport, cut where it wraps: that costs less
+ * than drawing every tile into the viewport every frame. */
+#define TERRAIN_LINES 200
+static uint8_t TerrainPixels[SCREEN_WIDTH * TERRAIN_LINES];
+
+/* Puts an 8x8 tile into the terrain picture at its tile column x and tile row y. */
+void DrawTerrainTile(int32_t tile, int16_t x, int16_t y)
+{
+	uint8_t *dst = TerrainPixels + TileRowOffsets[(uint16_t)y] + (uint32_t)(uint16_t)x * 8;
+	const uint8_t *src = LINEAR(tile);
+	int16_t i;
+
+	for (i = 0; i < 8; i++) {
+		memcpy(dst, src, 8);
+		src += 8;
+		dst += SCREEN_WIDTH;
+	}
+}
+
+/* Takes the viewport's tile at tile column x and row y into the terrain picture at its column
+ * column and row row: for a cell paintTerrain leaves alone. */
+void KeepTerrainTile(int16_t x, int16_t y, int16_t column, int16_t row)
+{
+	const uint8_t *src = LINEAR(TileRowOffsets[(uint16_t)y] + ViewportFirstRow + (uint32_t)(uint16_t)x * 8);
+	uint8_t *dst = TerrainPixels + TileRowOffsets[(uint16_t)row] + (uint32_t)(uint16_t)column * 8;
+	int16_t i;
+
+	for (i = 0; i < 8; i++) {
+		memcpy(dst, src, 8);
+		src += SCREEN_WIDTH;
+		dst += SCREEN_WIDTH;
+	}
+}
+
+/* Copies the terrain picture into the viewport, the picture's tile column column and row row at
+ * the viewport's top left. */
+void ShowTerrain(int16_t column, int16_t row)
+{
+	uint8_t *dst = LINEAR(ViewportFirstRow);
+	uint32_t left = (uint32_t)(uint16_t)column * 8, right = SCREEN_WIDTH - left;
+	const uint8_t *src = TerrainPixels + TileRowOffsets[(uint16_t)row];
+	const uint8_t *end = TerrainPixels + sizeof TerrainPixels;
+	int16_t line;
+
+	for (line = 0; line < TERRAIN_LINES; line++) {
+		memcpy(dst, src + left, right);
+		if (left != 0)
+			memcpy(dst + right, src, left);
+		dst += SCREEN_WIDTH;
+		if ((src += SCREEN_WIDTH) == end)
+			src = TerrainPixels;
+	}
+}
+
 /* Fill a view's clip box with one color, row by row through its row table. */
 void FillView(void *view, uint8_t color)
 {

@@ -40,6 +40,9 @@ int16_t IsDepthBlockSet(int32_t);
 /* Palettes, buffers and shapes. */
 void SetPaletteRange(int32_t, int16_t *, int16_t, int16_t);
 void DrawTile(int32_t, int16_t, int16_t);
+void DrawTerrainTile(int32_t, int16_t, int16_t);
+void KeepTerrainTile(int16_t, int16_t, int16_t, int16_t);
+void ShowTerrain(int16_t, int16_t);
 void FillView(void *, uint8_t);
 void SetRowAddress(uint16_t, int32_t, int32_t);
 int32_t GetRowAddress(int16_t, int32_t);
