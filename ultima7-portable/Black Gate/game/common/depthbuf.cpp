@@ -27,14 +27,17 @@ void RaiseDepthRun(int32_t cell, int16_t depth, uint16_t run)
 void RaiseDepthRect(int32_t cell, int16_t depth, int16_t cols, int16_t rows)
 {
 	uint16_t row = rows, col;
-	int32_t at;
+	int8_t *line = (int8_t *) LINEAR(cell), *at;
+	int8_t d = (int8_t) depth;
 
 	do {
-		at = cell;
-		cell += DEPTH_PITCH;
+		at = line;
+		line += DEPTH_PITCH;
 		col = cols;
 		do {
-			RaiseDepth(at++, depth);
+			if (d > *at)
+				*at = d;
+			at++;
 		} while (--col != 0);
 	} while (--row != 0);
 }
