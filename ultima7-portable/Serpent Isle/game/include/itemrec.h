@@ -36,6 +36,31 @@ struct ItemSnapshot {
 	ItemSnapshot() {}
 };
 
+/* The 8-byte extension a container or NPC record points to. */
+struct ItemExtra {
+	le_int16 contents;
+	uint8_t region, quality, flags, z, hitPoints, qualityFlags;
+};
+
+#include "type.h"
+
+/* An item's placement byte, in its record or in its extension. item.cpp's, inline: the NPC loops
+ * and the map's helpers ask for it thousands of times a frame. The macro sends every caller that
+ * sees this header here; item.cpp keeps the function for the others. */
+inline ItemInfo ItemZAndStuff(objref *ref)
+{
+	ItemRecord *record = ref->ptr();
+	uint8_t records = (uint8_t) ItemTypeClassFlags[gItemTypeInfo[record->typeFrame & 0x3ff].typeClass]
+		& CLASS_RECORDS;
+
+	if (records == 0)
+		return record->data.direct.z;
+	if (records >= 2)
+		return ((ItemExtra *) ItemAt(record->data.extra))->z;
+	return 0;
+}
+#define GetItemZAndStuff(ref) ItemZAndStuff(ref)
+
 /* The next item in the same list. */
 inline objref objref::next() { return ptr()->next; }
 inline uint16_t objref::type() { return ptr()->typeFrame & 0x3ff; }

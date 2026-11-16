@@ -8,12 +8,6 @@ struct Coord;
 struct Loc;
 struct CellCoord;
 
-/* The 8-byte extension a container or NPC record points to. */
-struct ItemExtra {
-	le_int16 contents;
-	uint8_t region, quality, flags, z, hitPoints, qualityFlags;
-};
-
 /* bits of an item's quality flags */
 #define QUALITY_INVISIBLE       0x01
 #define QUALITY_OKAY_TO_TAKE    0x08

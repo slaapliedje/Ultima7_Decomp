@@ -159,21 +159,12 @@ void Item_getXYZ(objref &ref, int16_t *x, int16_t *y, int16_t *z)
 		Item_getXAndY(ref, x, y);
 }
 
+#undef GetItemZAndStuff
 ItemInfo GetItemZAndStuff(objref *ref)
 {
-	uint8_t records;
-	int16_t extra;
-
-	records = (int8_t)CLASS_FLAGS(ITEM(ref->off)) & CLASS_RECORDS;
-	if (records == 0) {
-		return ITEM(ref->off)->data.direct.z;
-	} else if (records >= 2) {
-		extra = ITEM(ref->off)->data.extra;
-		return EXTRA(extra)->z;
-	} else {
-		return 0;
-	}
+	return ItemZAndStuff(ref);
 }
+#define GetItemZAndStuff(ref) ItemZAndStuff(ref)
 
 void SetItemZAndStuff(objref *ref, ItemInfo &info)
 {
