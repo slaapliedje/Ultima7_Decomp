@@ -133,6 +133,8 @@ static uint8_t LockStatus[NUM_CHANS];
 
 static void ReleaseChannel(uint16_t channel);
 
+/* Waits as long as the DOS game did: its retraces came at 70 Hz (RETRACE_US). Counting the
+ * display's own retraces would wait longer on a 60 or 50 Hz screen. */
 void XmidiWait(uint16_t retraces)
 {
 	if (Mt32ShortWaits)
@@ -145,8 +147,7 @@ void XmidiWait(uint16_t retraces)
 		return;
 	MainWaiting = 1;
 	plat_sound_unlock();
-	while (retraces-- > 0)
-		plat_video_wait_retrace();
+	plat_sleep((uint32_t) (((int32_t) retraces * RETRACE_US + 999) / 1000));
 	plat_sound_lock();
 	MainWaiting = 0;
 }
