@@ -20,6 +20,7 @@
 #include "coord.h"
 #include "maps.h"
 #include "mapview.h"
+#include "itempos.h"
 #include "target.h"
 #include "sortitem.h"
 #include "search.h"
@@ -93,7 +94,6 @@ extern int16_t FindRegionSlot(Loc, Loc);
 extern Coord Item_getX(objref &);
 extern Coord Item_getY(objref &);
 extern void Item_getXAndY(objref &, int16_t *, int16_t *);
-extern void Item_getXYZ(objref &, int16_t *, int16_t *, int16_t *);
 extern void Item_setFrame(objref *, int16_t);
 extern void Item_setLocationKind(objref *, uint8_t);
 extern void Item_setRegion(objref *, uint8_t);

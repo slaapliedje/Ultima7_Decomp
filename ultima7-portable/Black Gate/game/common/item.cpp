@@ -143,22 +143,6 @@ void Item_getXAndY(objref &ref, int16_t *x, int16_t *y)
 	}
 }
 
-void Item_getXYZ(objref &ref, int16_t *x, int16_t *y, int16_t *z)
-{
-	ItemInfo info = GetItemZAndStuff(&ref);
-
-	*z = info.z();
-	if (GetLocationKind(info) <= 3) {
-		/* on the map, as everything in the chunk lists is */
-		ItemRecord *record = ITEM(ref.off);
-		uint8_t region = LoadedRegions[GetLocationKind(info)];
-
-		*x = record->position.world.x + RegionX[region].value;
-		*y = record->position.world.y + RegionY[region].value;
-	} else
-		Item_getXAndY(ref, x, y);
-}
-
 #undef GetItemZAndStuff
 ItemInfo GetItemZAndStuff(objref *ref)
 {

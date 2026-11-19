@@ -7,6 +7,7 @@
 #include "lowlevel.h"
 #include "iteminfo.h"
 #include "item.h"
+#include "itempos.h"
 #include "coord.h"
 #include "vooalloc.h"
 #include "bitarray.h"

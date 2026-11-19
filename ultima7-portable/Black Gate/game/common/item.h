@@ -29,8 +29,7 @@ Coord Item_getX(objref &&ref);
 Coord Item_getY(objref &ref);
 Coord Item_getY(objref &&ref);
 void Item_getXAndY(objref &ref, int16_t *x, int16_t *y);
-/* x, y and z at once, reading the item's placement byte only once. */
-void Item_getXYZ(objref &ref, int16_t *x, int16_t *y, int16_t *z);
+/* Item_getXYZ is inline, in itempos.h. */
 inline void Item_getXAndY(objref &&ref, int16_t *x, int16_t *y) { Item_getXAndY(ref, x, y); }
 void SetItemZAndStuff(objref *ref, ItemInfo &info);
 inline void SetItemZAndStuff(objref *ref, ItemInfo &&info) { SetItemZAndStuff(ref, info); }
