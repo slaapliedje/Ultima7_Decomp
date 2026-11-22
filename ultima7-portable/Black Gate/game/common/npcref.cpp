@@ -65,6 +65,11 @@ NpcBuffer * GetNpcBufferForIbo(objref *ref)
 {
 	if (ref->valid() && IS_NPC(ITEM(ref->off))) {
 		int16_t npc = Item_getNpcNumber(ref);
+
+		/* Not a numbered NPC (a reference into the middle of a record can read as one): the
+		 * original then indexed past NpcSlotOf. */
+		if ((uint16_t) npc >= (uint16_t) (NpcRecordCount + ExtraNpcRecordCount))
+			return &NullNpcBuffer;
 		uint8_t slot = NpcSlotOf[npc];
 
 		/* GetCachedNpcBuffer's answer for an NPC already in the cache, without the call */
