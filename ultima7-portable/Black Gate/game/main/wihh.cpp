@@ -65,7 +65,7 @@ extern const uint8_t NpcTintColors[] = {
 	0x85, 0x86, 0x93, 0x94, 0xa3, 0xb1, 0xb2, 0xbf, 0xc0, 0xd0, 0xd1, 0xe0, 0xdf, 0xff
 };
 
-int16_t AllocateVoodooBlock(int32_t *address, uint16_t size)
+int16_t AllocateVoodooBlock(int32_u *address, uint16_t size)
 {
 	if ((*address = AllocateVoodooMemory(&VoodooXmsBlock, (int32_t) size)) == 0)
 		ReportOutOfVoodooMemory();

@@ -434,7 +434,7 @@ U7ShapeManager::U7ShapeManager()
 }
 
 /* The width and height of a shape's largest frame. */
-void U7ShapeManager::getShapeSize(int16_t *w, int16_t *h, int16_t shape)
+void U7ShapeManager::getShapeSize(int16_u *w, int16_u *h, int16_t shape)
 {
 	if (IsTileShape(shape)) {
 		*w = 8;
@@ -455,7 +455,7 @@ void U7ShapeManager::getShapeSize(int16_t *w, int16_t *h, int16_t shape)
 }
 
 /* The width and height of frame f of the shape. */
-void U7ShapeManager::getFrameSize(int16_t *w, int16_t *h, int16_t shape, int16_t f)
+void U7ShapeManager::getFrameSize(int16_u *w, int16_u *h, int16_t shape, int16_t f)
 {
 	Rect r, *p = &r;
 

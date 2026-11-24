@@ -18,7 +18,7 @@
 char ChunkFileName[82];
 int16_t ChunkFileHandle = -1;
 
-int16_t AllocateChunkBlock(int32_t *block);
+int16_t AllocateChunkBlock(int32_u *block);
 
 inline int8_t IsEmptyBlock(int32_t block) { return block == 0; }
 
@@ -81,7 +81,7 @@ int32_t ChunkCache::getChunk(int16_t n)
 	return block[slot];
 }
 
-int16_t AllocateChunkBlock(int32_t *block)
+int16_t AllocateChunkBlock(int32_u *block)
 {
 	*block = AllocateVoodooMemory(&VoodooXmsBlock, CHUNK_BYTES);
 	return *block != 0;

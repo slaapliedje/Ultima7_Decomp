@@ -12,7 +12,7 @@
 
 /* Load count 256-byte records from a flex into far memory, then blanks empty ones, after a 256-byte
  * table that maps 254 - i to record i + 1. */
-void LoadXformTables(int32_t *table, char *name, int16_t count, int16_t blanks)
+void LoadXformTables(int32_u *table, char *name, int16_t count, int16_t blanks)
 {
 	int16_t size;
 	char *buf;
@@ -43,14 +43,14 @@ void LoadXformTables(int32_t *table, char *name, int16_t count, int16_t blanks)
 	MoveBufferToVoodoo(table, buf, size);
 }
 
-void MoveBufferToVoodoo(int32_t *block, void *buffer, int16_t size)
+void MoveBufferToVoodoo(int32_u *block, void *buffer, int16_t size)
 {
 	*block = AllocateVoodooMemory(&VoodooXmsBlock, (int32_t) size);
 	CopyFarToLinear(*block, (void *) buffer, (int32_t) size);
 	delete buffer;
 }
 
-void SetXformEntries(int32_t *table, uint8_t *indices, int8_t value)
+void SetXformEntries(int32_u *table, uint8_t *indices, int8_t value)
 {
 	for (; *indices != 255; indices++)
 		PokeByte(*table + *indices, value);

@@ -24,8 +24,8 @@ static int16_t Get16(const uint8_t *p) { return (int16_t) (FrameByte(p) | FrameB
 int8_t IsPointInFrame(void *shape, void *pos, void *point, int16_t flags)
 {
 	const uint8_t *frame = (const uint8_t *) shape;
-	const int16_t *at = (const int16_t *) pos;
-	const int16_t *pt = (const int16_t *) point;
+	const int16_u *at = (const int16_u *) pos;
+	const int16_u *pt = (const int16_u *) point;
 	int16_t length, x, y, dx;
 	uint8_t run, count;
 

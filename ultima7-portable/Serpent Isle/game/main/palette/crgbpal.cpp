@@ -14,7 +14,7 @@
 char *const PaletteFileName = "PALETTES.FLX";
 
 /* read one palette from PALETTES.FLX into a block, allocating it on first use */
-void LoadPalette(int32_t *block, int16_t index)
+void LoadPalette(int32_u *block, int16_t index)
 {
 	if (index != RED_RAMP_PALETTE) {
 		Flex file;
@@ -30,7 +30,7 @@ void LoadPalette(int32_t *block, int16_t index)
 }
 
 /* allocate a 256-color palette block and clear it */
-void AllocatePaletteBlock(int32_t *block)
+void AllocatePaletteBlock(int32_u *block)
 {
 	if ((*block = AllocateVoodooMemory(&VoodooXmsBlock, INT32_C(768))) == 0)
 		ReportOutOfVoodooMemory();
@@ -38,7 +38,7 @@ void AllocatePaletteBlock(int32_t *block)
 }
 
 /* fill entries 1-255 with a repeating red ramp */
-void BuildRedPalette(int32_t *block)
+void BuildRedPalette(int32_u *block)
 {
 	int16_t i;
 	int8_t red;

@@ -25,7 +25,7 @@ void CheckMojoBounds(uint32_t bound, uint32_t index)
 	}
 }
 
-uint8_t MakeMojo(int32_t count, int32_t size, int32_t *mem, int32_t *bound)
+uint8_t MakeMojo(int32_t count, int32_t size, int32_u *mem, int32_u *bound)
 {
 	*bound = count;
 	if ((*mem = AllocateVoodooMemory(&VoodooXmsBlock, count * size)) == 0)

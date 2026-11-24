@@ -52,7 +52,7 @@ void Egg_addWaitAway(objref *ref, Script *code);
 extern "C" {
 #endif
 void Egg_activate(objref ref, uint8_t force);
-void Egg_setCriteriaAndDistance(int16_t *ref, uint8_t criteria, uint8_t distance);
+void Egg_setCriteriaAndDistance(int16_u *ref, uint8_t criteria, uint8_t distance);
 #ifdef __cplusplus
 }
 #endif

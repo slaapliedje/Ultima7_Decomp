@@ -13,7 +13,7 @@ extern const char LightSourceStrength[32];
 extern const int16_t HeldItemFrame[32];
 extern int8_t CurrentNpcTint;
 extern const uint8_t NpcTintColors[];
-int16_t AllocateVoodooBlock(int32_t *address, uint16_t size);
+int16_t AllocateVoodooBlock(int32_u *address, uint16_t size);
 struct Hotspot ReadHotspot(VoodooAddress table, int16_t frame);
 void LoadWihh(char *name);
 int8_t GetWihhHotspot(uint16_t type, int16_t frame, int8_t flip, int16_t *x, int16_t *y);

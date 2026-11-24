@@ -51,7 +51,7 @@ void MapCoordsSaver::load(char *dir)
 }
 
 /* The world cell under screen point x, y; the view shows 40 by 24 cells of 8 pixels. */
-void ScreenToWorldCoords(int16_t x, int16_t y, int16_t *tx, int16_t *ty, int8_t snap)
+void ScreenToWorldCoords(int16_t x, int16_t y, int16_u *tx, int16_u *ty, int8_t snap)
 {
 	int16_t xOffset, yOffset;
 
@@ -75,7 +75,7 @@ void ScreenToWorldCoords(int16_t x, int16_t y, int16_t *tx, int16_t *ty, int8_t 
 	*ty = (*ty + WORLD_SIZE) % WORLD_SIZE;
 }
 
-void WorldCoordsToScreen(Coord tx, Coord ty, int16_t *x, int16_t *y)
+void WorldCoordsToScreen(Coord tx, Coord ty, int16_u *x, int16_u *y)
 {
 	Coord left;
 	Coord top;

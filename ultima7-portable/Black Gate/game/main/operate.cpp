@@ -135,7 +135,7 @@ Operate UseSpotFinder;
 /* Finds a free spot beside the target from which the NPC can operate it and starts the NPC
  * walking there. The spot and the way to face come back through spotX, spotY, spotZ and dir;
  * topType, unless -1, is a type that must also fit on top of the target in front of the spot. */
-uint8_t Operate::findUseSpot(objref *npc, objref target, int16_t *spotX, int16_t *spotY, int16_t *spotZ,
+uint8_t Operate::findUseSpot(objref *npc, objref target, int16_u *spotX, int16_u *spotY, int16_u *spotZ,
 	uint8_t *dir, int16_t topType)
 {
 	int16_t i, j, count, zlo, zhi, z, found, dz, startZ;

@@ -29,7 +29,7 @@ struct CacheEntryPool {
 	void initialize(int16_t n);
 	uint8_t hasFree();
 	CacheEntry *take();
-	void giveBack(CacheEntry **entry);
+	void giveBack(CacheEntryPtr_u *entry);
 };
 
 #endif

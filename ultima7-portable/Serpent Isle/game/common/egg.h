@@ -31,7 +31,7 @@ extern "C" {
 int16_t Egg_rollChance(struct EggRecord *egg);
 void Egg_setHatched(int16_t *ref);
 void Egg_clearHatched(int16_t *ref);
-void Egg_setCriteriaAndDistance(int16_t *ref, uint8_t criteria, uint8_t distance);
+void Egg_setCriteriaAndDistance(int16_u *ref, uint8_t criteria, uint8_t distance);
 #ifdef __cplusplus
 }
 #endif

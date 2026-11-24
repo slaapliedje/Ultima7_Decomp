@@ -301,7 +301,7 @@ uint32_t Cache_evictOldest(RecordCache *cache, uint32_t needed, CacheEntry **gap
 	return freed;
 }
 
-void Cache_freeEntry(RecordCache *cache, CacheEntry **entry)
+void Cache_freeEntry(RecordCache *cache, CacheEntryPtr_u *entry)
 {
 	CacheEntry *gap = 0;
 

@@ -26,7 +26,7 @@ inline uint8_t StartWalkToItem(objref *ref, TypeFrame &&wanted, TypeFrame &&near
 
 /* Callers pass its one instance; findUseSpot never reads it. */
 struct Operate {
-	uint8_t findUseSpot(objref *npc, objref target, int16_t *spotX, int16_t *spotY, int16_t *spotZ, uint8_t *dir,
+	uint8_t findUseSpot(objref *npc, objref target, int16_u *spotX, int16_u *spotY, int16_u *spotZ, uint8_t *dir,
 		int16_t topType);
 };
 

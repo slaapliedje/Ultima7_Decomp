@@ -9,8 +9,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-int16_t GetGreatestDelta2D(int16_t *x1, int16_t *y1, int16_t *x2, int16_t *y2);
-int16_t GetGreatestDelta3D(int16_t *x1, int16_t *y1, int16_t z1, int16_t *x2, int16_t *y2, int16_t z2);
+int16_t GetGreatestDelta2D(int16_u *x1, int16_u *y1, int16_u *x2, int16_u *y2);
+int16_t GetGreatestDelta3D(int16_u *x1, int16_u *y1, int16_t z1, int16_u *x2, int16_u *y2, int16_t z2);
 #ifdef __cplusplus
 }
 #endif

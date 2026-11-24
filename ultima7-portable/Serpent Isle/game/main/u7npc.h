@@ -129,7 +129,7 @@ inline void GetNpcIbo(objref *ref, int16_t number)
 int16_t Item_getNpcNumber(objref *ref);
 uint8_t Npc_hasItemTarget(objref *ref);
 int16_t Npc_getItemTarget(objref *ref);
-void Npc_getTargetCoords(objref *ref, int16_t *x, int16_t *y, int16_t *z);
+void Npc_getTargetCoords(objref *ref, int16_u *x, int16_u *y, int16_u *z);
 void Npc_setItemTarget(objref *ref, int16_t target);
 void Npc_setCoordTarget(objref *ref, int16_t *x, int16_t *y, int16_t z);
 void Npc_setTargetWeapon(objref *ref, uint16_t value);

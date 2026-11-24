@@ -38,7 +38,7 @@ void Egg_clearHatched(int16_t *ref)
 	EGG(EXTRA_OF(*ref))->hatched = 0;
 }
 
-void Egg_setCriteriaAndDistance(int16_t *ref, uint8_t criteria, uint8_t distance)
+void Egg_setCriteriaAndDistance(int16_u *ref, uint8_t criteria, uint8_t distance)
 {
 	if (criteria < 8) {
 		EGG(EXTRA_OF(*ref))->criteria = criteria;

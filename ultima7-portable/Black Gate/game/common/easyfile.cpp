@@ -73,7 +73,7 @@ char *BuildNumberedTempPath(char *dir, char *fmt, int16_t n, int8_t temp)
 }
 
 /* Replaces the string at *p with a new copy of s. */
-void ReplaceString(char **p, char *s)
+void ReplaceString(char_ptr_u *p, char *s)
 {
 	if (*p != 0)
 		delete[] *p;
@@ -111,7 +111,7 @@ int16_t CreateFileOrFail(char *name)
 
 /* Reads size bytes at offset (-1: where the file stands) into the far block, allocating it when
  * *block is 0. Returns the bytes read. */
-int32_t ReadHandleToVoodoo(int16_t fd, int32_t offset, int32_t size, int32_t *block)
+int32_t ReadHandleToVoodoo(int16_t fd, int32_t offset, int32_t size, int32_u *block)
 {
 	int32_t done = 0;
 	int32_t chunk;

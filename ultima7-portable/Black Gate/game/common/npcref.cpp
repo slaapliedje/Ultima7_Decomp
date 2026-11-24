@@ -358,7 +358,7 @@ int16_t Npc_getItemTarget(objref *ref)
 	return GetNpcBufferForIbo(ref)->schedulePosition;
 }
 
-void Npc_getTargetCoords(objref *ref, int16_t *x, int16_t *y, int16_t *z)
+void Npc_getTargetCoords(objref *ref, int16_u *x, int16_u *y, int16_u *z)
 {
 	int16_t d;
 

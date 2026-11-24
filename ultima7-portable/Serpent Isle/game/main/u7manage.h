@@ -69,8 +69,8 @@ public:
 	int32_t loadRecordBlock(char *name, int16_t h, int16_t first);
 	void unlockOldBlock();
 	void writeBlockFile(char *name, int16_t h, int32_t data, int32_t size);
-	void getShapeSize(int16_t *w, int16_t *h, int16_t shape);
-	void getFrameSize(int16_t *w, int16_t *h, int16_t shape, int16_t f);
+	void getShapeSize(int16_u *w, int16_u *h, int16_t shape);
+	void getFrameSize(int16_u *w, int16_u *h, int16_t shape, int16_t f);
 	void saveUnderShape(View *v, int16_t h, int16_t x, int16_t y, int16_t shape, int16_t f);
 	void saveUnderRect(View *v, int16_t h, struct Rect *r);
 	void restoreUnderShape(View *v, int16_t h, int16_t x, int16_t y, int16_t shape, int16_t f);

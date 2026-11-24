@@ -57,7 +57,7 @@ CacheEntry *CacheEntryPool::take()
 	return entry;
 }
 
-void CacheEntryPool::giveBack(CacheEntry **entry)
+void CacheEntryPool::giveBack(CacheEntryPtr_u *entry)
 {
 	(*entry)->reset();
 	(*entry)->next = free;

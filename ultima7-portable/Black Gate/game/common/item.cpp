@@ -129,7 +129,7 @@ Coord Item_getY(objref &ref)
 
 Coord Item_getY(objref &&ref) { return Item_getY(ref); }
 
-void Item_getXAndY(objref &ref, int16_t *x, int16_t *y)
+void Item_getXAndY(objref &ref, int16_u *x, int16_u *y)
 {
 	ItemInfo info = GetItemZAndStuff(&ref);
 

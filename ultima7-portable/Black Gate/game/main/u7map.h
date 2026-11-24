@@ -5,8 +5,8 @@ struct MapCoordsSaver;
 
 struct Coord;
 
-void ScreenToWorldCoords(int16_t x, int16_t y, int16_t *tx, int16_t *ty, int8_t snap);
-void WorldCoordsToScreen(Coord tx, Coord ty, int16_t *x, int16_t *y);
+void ScreenToWorldCoords(int16_t x, int16_t y, int16_u *tx, int16_u *ty, int8_t snap);
+void WorldCoordsToScreen(Coord tx, Coord ty, int16_u *x, int16_u *y);
 
 extern MapCoordsSaver MapCoordsFile;
 extern char *MapCoordFileName;

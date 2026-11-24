@@ -65,4 +65,15 @@ template <class T> inline T max(T a, T b) { return a > b ? a : b; }
 
 #pragma pack(1)
 
+/* A word or long at any address. The game's structures are packed (above), so a member can sit
+ * at an odd address, and so can a structure kept on its own: one passed on as a plain int16_t *
+ * is then read with an access a 68000 cannot make (an address error). A pointer to one of these
+ * types makes GCC read a byte at a time, where the CPU needs it (strict alignment). */
+typedef int16_t int16_u __attribute__((aligned(1)));
+typedef uint16_t uint16_u __attribute__((aligned(1)));
+typedef int32_t int32_u __attribute__((aligned(1)));
+typedef uint32_t uint32_u __attribute__((aligned(1)));
+typedef char *char_ptr_u __attribute__((aligned(1)));
+typedef struct CacheEntry *CacheEntryPtr_u __attribute__((aligned(1)));
+
 #endif

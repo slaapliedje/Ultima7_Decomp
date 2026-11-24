@@ -15,7 +15,7 @@ struct ChunkCache {
 
 int16_t OpenChunkFile(char *name);
 void CloseChunkFile(void);
-int16_t AllocateChunkBlock(int32_t *block);
+int16_t AllocateChunkBlock(int32_u *block);
 
 extern char ChunkFileName[82];
 extern int16_t ChunkFileHandle;

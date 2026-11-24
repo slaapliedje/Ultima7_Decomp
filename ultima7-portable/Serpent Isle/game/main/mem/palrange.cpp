@@ -9,7 +9,7 @@
 static uint8_t PaletteShadow[256 * 3];
 
 /* Colors first to first + num - 1 from 6-byte entries: three 8.8 words, the high bytes 6-bit. */
-extern "C" void SetPaletteRange(int32_t table, int16_t *indices, int16_t first, int16_t num)
+extern "C" void SetPaletteRange(int32_t table, int16_u *indices, int16_t first, int16_t num)
 {
 	uint8_t *rgb;
 	uint8_t *entry;
@@ -26,7 +26,7 @@ extern "C" void SetPaletteRange(int32_t table, int16_t *indices, int16_t first, 
 }
 
 /* The same from 3-byte entries, held anywhere. */
-extern "C" void SetPaletteRangeBytes(const uint8_t *table, int16_t *indices, int16_t first, int16_t num)
+extern "C" void SetPaletteRangeBytes(const uint8_t *table, int16_u *indices, int16_t first, int16_t num)
 {
 	uint8_t *rgb;
 	const uint8_t *entry;

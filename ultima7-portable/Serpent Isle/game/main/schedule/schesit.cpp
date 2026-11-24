@@ -16,7 +16,7 @@ int16_t NapBed;
 static struct {
 	int16_t refs[8];
 	uint16_t lastUsecodeFunction;
-} PartySitArea;
+} PartySitArea __attribute__((aligned(2)));   /* even, for the references below (a 68000) */
 int16_t (&PartySitRefs)[8] = PartySitArea.refs;
 uint16_t &LastUsecodeFunction = PartySitArea.lastUsecodeFunction;
 

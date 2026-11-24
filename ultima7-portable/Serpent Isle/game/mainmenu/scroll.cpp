@@ -10,12 +10,15 @@
 
 namespace MainMenu {
 
+/* lines is a packed member, so a pointer into it can be odd: read a byte at a time (a 68000) */
+typedef TextSprite *TextSpritePtr_u __attribute__((aligned(1)));
+
 #define LINE_BREAK  '|'
 #define WHOLE_TEXT  -1      /* setText measures the string itself */
 
 ScrollLine::ScrollLine(void *font, int8_t back, Screen *screen, int8_t keep)
 {
-	TextSprite **line = lines;
+	TextSpritePtr_u *line = lines;
 
 	for (int16_t i = 0; i < 2; i++, line++) {
 		if ((*line = new TextSprite(font, back, screen, keep)) == 0)
@@ -25,16 +28,14 @@ ScrollLine::ScrollLine(void *font, int8_t back, Screen *screen, int8_t keep)
 
 ScrollLine::~ScrollLine()
 {
-	TextSprite **line = lines;
-
-	for (int16_t i = 0; i < 2; i++, line++)
-		if (*line)
-			delete *line;
+	for (int16_t i = 0; i < 2; i++)
+		if (lines[i])
+			delete lines[i];
 }
 
 void ScrollLine::moveTo(int16_t x, int16_t y)
 {
-	TextSprite **line = lines;
+	TextSpritePtr_u *line = lines;
 
 	for (int16_t i = 0; i < 2; i++, line++)
 		(*line)->moveTo(x, y);
@@ -48,7 +49,7 @@ void ScrollLine::moveTo(int16_t x, int16_t y, int16_t n)
 
 void ScrollLine::moveBy(int16_t dx, int16_t dy)
 {
-	TextSprite **line = lines;
+	TextSpritePtr_u *line = lines;
 
 	for (int16_t i = 0; i < 2; i++, line++)
 		(*line)->moveBy(dx, dy);
@@ -64,7 +65,7 @@ void ScrollLine::moveBy(int16_t dx, int16_t dy, int16_t n)
 uint8_t ScrollLine::aboveTop()
 {
 	int8_t above = 1;
-	TextSprite **line = lines;
+	TextSpritePtr_u *line = lines;
 
 	for (int16_t i = 0; i < 2; i++, line++)
 		above = above && (*line)->aboveTop();
@@ -74,7 +75,7 @@ uint8_t ScrollLine::aboveTop()
 uint8_t ScrollLine::aboveMiddle()
 {
 	int8_t above = 1;
-	TextSprite **line = lines;
+	TextSpritePtr_u *line = lines;
 
 	for (int16_t i = 0; i < 2; i++, line++)
 		above = above && (*line)->aboveMiddle();
@@ -126,7 +127,7 @@ void ScrollLine::setText(char *text, int16_t n)
 
 void ScrollLine::setAlign(int8_t a)
 {
-	TextSprite **line = lines;
+	TextSpritePtr_u *line = lines;
 
 	for (int16_t i = 0; i < 2; i++, line++)
 		(*line)->setAlign(a);
@@ -134,7 +135,7 @@ void ScrollLine::setAlign(int8_t a)
 
 void ScrollLine::setSpacing(int16_t spacing)
 {
-	TextSprite **line = lines;
+	TextSpritePtr_u *line = lines;
 
 	for (int16_t i = 0; i < 2; i++, line++)
 		(*line)->setSpacing(spacing);
@@ -142,7 +143,7 @@ void ScrollLine::setSpacing(int16_t spacing)
 
 void ScrollLine::setImage(void *data)
 {
-	TextSprite **line = lines;
+	TextSpritePtr_u *line = lines;
 
 	for (int16_t i = 0; i < 2; i++, line++)
 		(*line)->setImage(data);
@@ -150,7 +151,7 @@ void ScrollLine::setImage(void *data)
 
 void ScrollLine::setOwnImage(void *data)
 {
-	TextSprite **line = lines;
+	TextSpritePtr_u *line = lines;
 
 	for (int16_t i = 0; i < 2; i++, line++)
 		(*line)->setOwnImage(data);

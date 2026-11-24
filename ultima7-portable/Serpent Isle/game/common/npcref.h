@@ -70,7 +70,7 @@ uint8_t CreateNpc(objref *ref, TypeFrame &shape, CellCoord x, CellCoord y, int16
 void Npc_setNumber(objref *ref, uint16_t number);
 uint8_t Npc_hasItemTarget(objref *ref);
 int16_t Npc_getItemTarget(objref *ref);
-void Npc_getTargetCoords(objref *ref, int16_t *x, int16_t *y, int16_t *z);
+void Npc_getTargetCoords(objref *ref, int16_u *x, int16_u *y, int16_u *z);
 void Npc_setItemTarget(objref *ref, int16_t target);
 void Npc_setTargetWeapon(objref *ref, uint16_t value);
 void Npc_setMale(objref *ref);

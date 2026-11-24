@@ -38,7 +38,7 @@ int16_t IsBelowDepthCorners(int32_t, int16_t, uint16_t, uint16_t);
 int16_t IsDepthBlockSet(int32_t);
 
 /* Palettes, buffers and shapes. */
-void SetPaletteRange(int32_t, int16_t *, int16_t, int16_t);
+void SetPaletteRange(int32_t, int16_u *, int16_t, int16_t);
 void DrawTile(int32_t, int16_t, int16_t);
 void DrawTerrainTile(int32_t, int16_t, int16_t);
 void KeepTerrainTile(int16_t, int16_t, int16_t, int16_t);
@@ -71,7 +71,7 @@ void RestoreUnderFrame(struct View *, int32_t, int16_t, int16_t, int32_t, int16_
 void PaletteBytesToWords(int32_t, int32_t);
 int16_t PreparePaletteFade(int32_t, int32_t, int32_t, int32_t, int16_t);
 void StepPaletteFade(int32_t, int32_t, int32_t);
-void SetPaletteRangeBytes(const uint8_t *, int16_t *, int16_t, int16_t);
+void SetPaletteRangeBytes(const uint8_t *, int16_u *, int16_t, int16_t);
 void PaletteWordsToBytes(int32_t, int32_t);
 void ClearScreen(int16_t);
 uint16_t EncodeFrame(struct View *, int32_t, int32_t, int32_t, int32_t, int16_t, int16_t);

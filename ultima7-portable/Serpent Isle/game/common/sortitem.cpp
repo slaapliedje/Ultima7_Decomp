@@ -94,7 +94,7 @@ extern le_int16 ChunkItemLists[4][16][16];
 extern int16_t FindRegionSlot(Loc, Loc);
 extern Coord Item_getX(objref &);
 extern Coord Item_getY(objref &);
-extern void Item_getXAndY(objref &, int16_t *, int16_t *);
+extern void Item_getXAndY(objref &, int16_u *, int16_u *);
 extern void Item_setFrame(objref *, int16_t);
 extern void Item_setLocationKind(objref *, uint8_t);
 extern void Item_setRegion(objref *, uint8_t);

@@ -18,7 +18,7 @@ void Cache_checkRing(RecordCache *cache, char *where);
 void Cache_check(RecordCache *cache, char *where);
 void Cache_initialize(RecordCache *cache, CacheManager *manager, uint32_t capacity, int16_t entries);
 uint32_t Cache_evictOldest(RecordCache *cache, uint32_t needed, CacheEntry **gap);
-void Cache_freeEntry(RecordCache *cache, CacheEntry **entry);
+void Cache_freeEntry(RecordCache *cache, CacheEntryPtr_u *entry);
 CacheEntry * Cache_makeSpace(RecordCache *cache, uint32_t needed);
 CacheEntry * Cache_compact(RecordCache *cache, uint32_t needed);
 CacheEntry * Cache_findGap(RecordCache *cache, uint32_t needed, uint32_t *available);

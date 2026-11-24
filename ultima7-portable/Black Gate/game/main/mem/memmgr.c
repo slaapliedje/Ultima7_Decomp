@@ -116,6 +116,9 @@ void * AllocateFarHeapTop(int32_t size, uint16_t flags)
 		attributes |= PARA_ALIGNED;
 		size += 15;
 	}
+	/* Even sizes, so every block starts at an even address (the heap does): DOS gave byte
+	 * alignment, which a 68000 cannot read words or longs from. */
+	size = (size + 1) & ~INT32_C(1);
 	if (flags & FAR_RETAINED)
 		attributes |= RETAINED;
 
@@ -186,6 +189,9 @@ void * AllocateFarBlock(int32_t size, uint16_t flags)
 		attributes |= PARA_ALIGNED;
 		size += 15;
 	}
+	/* Even sizes, so every block starts at an even address (the heap does): DOS gave byte
+	 * alignment, which a 68000 cannot read words or longs from. */
+	size = (size + 1) & ~INT32_C(1);
 	if (flags & FAR_RETAINED)
 		attributes |= RETAINED;
 

@@ -8,7 +8,7 @@
 const int16_t UnusedCoordTable[17] = { 101, 98, 95, 92, 89, 84, 81, 78, 75, 70, 55, 53, 50, 42, 39, 21, 16 };
 
 /* how far a lies past b, the short way round */
-int16_t CompareWorldCoords(int16_t *a, int16_t *b)
+int16_t CompareWorldCoords(int16_u *a, int16_u *b)
 {
 	int16_t v;
 
@@ -21,7 +21,7 @@ int16_t CompareWorldCoords(int16_t *a, int16_t *b)
 }
 
 /* larger of the two wrapped axis distances */
-int16_t GetGreatestDelta2D(int16_t *x1, int16_t *y1, int16_t *x2, int16_t *y2)
+int16_t GetGreatestDelta2D(int16_u *x1, int16_u *y1, int16_u *x2, int16_u *y2)
 {
 	int16_t x, y;
 	int16_t xdist, ydist;
@@ -40,7 +40,7 @@ int16_t GetGreatestDelta2D(int16_t *x1, int16_t *y1, int16_t *x2, int16_t *y2)
 }
 
 /* largest of the three axis distances; height does not wrap */
-int16_t GetGreatestDelta3D(int16_t *x1, int16_t *y1, int16_t z1, int16_t *x2, int16_t *y2, int16_t z2)
+int16_t GetGreatestDelta3D(int16_u *x1, int16_u *y1, int16_t z1, int16_u *x2, int16_u *y2, int16_t z2)
 {
 	int16_t xdist, x;
 	int16_t ydist, y;

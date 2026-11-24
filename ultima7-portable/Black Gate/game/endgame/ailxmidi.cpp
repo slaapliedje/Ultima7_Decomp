@@ -644,7 +644,7 @@ static uint8_t PlayEvents(Sequence *s, int16_t handle)
 }
 
 /* A step of a volume or tempo ramp: how many percent it moves this service. */
-static uint16_t RampStep(int32_t *accum, int32_t period)
+static uint16_t RampStep(int32_u *accum, int32_t period)
 {
 	uint16_t steps = 0;
 
@@ -656,7 +656,7 @@ static uint16_t RampStep(int32_t *accum, int32_t period)
 	return steps;
 }
 
-static void Ramp(uint16_t *percent, uint16_t target, uint16_t steps)
+static void Ramp(uint16_u *percent, uint16_t target, uint16_t steps)
 {
 	if ((int16_t) *percent < (int16_t) target) {
 		*percent += steps;
