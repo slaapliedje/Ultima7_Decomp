@@ -6,12 +6,16 @@
  *
  *   0         unused, so no allocation is ever at 0
  *   0x1000    screen, 320x200
- *   0x11000   far heap, 1 MB
- *   0x111000  extended memory, to the end
+ *   0x11000   far heap, 1 MB unless the build sets FAR_HEAP_AREA_SIZE
+ *   after it  extended memory, to the end
+ * The game rarely has more than 300 K of the far heap in use; a port short of memory may
+ * build with a smaller one.
  */
 #define SCREEN_AREA INT32_C(0x1000)
 #define FAR_HEAP_AREA INT32_C(0x11000)
+#ifndef FAR_HEAP_AREA_SIZE
 #define FAR_HEAP_AREA_SIZE INT32_C(0x100000)
+#endif
 #define EXTENDED_AREA (FAR_HEAP_AREA + FAR_HEAP_AREA_SIZE)
 
 uint8_t *LinearBase = 0;

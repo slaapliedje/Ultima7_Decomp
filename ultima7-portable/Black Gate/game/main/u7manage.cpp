@@ -76,7 +76,11 @@ char CurrentDirectory[80] = ".";
 char StaticDirectory[80] = ".";
 char GamedatDirectory[80] = ".";
 CachedFlex ShapesFile;
-int32_t ShapePoolSize = INT32_C(583680);
+/* The shape cache: 570 K unless the build sets SHAPE_POOL_SIZE; the C option overrides it. */
+#ifndef SHAPE_POOL_SIZE
+#define SHAPE_POOL_SIZE INT32_C(583680)
+#endif
+int32_t ShapePoolSize = SHAPE_POOL_SIZE;
 View ViewBlocks[3];
 View ViewBlockCopies[3];
 /* The first 1024 loads only count up; then a hand sweeps the object types. */
@@ -570,7 +574,7 @@ extern "C" void ResetU7manageGlobals(void)
 	strncpy(StaticDirectory, ".", sizeof(StaticDirectory));
 	strncpy(GamedatDirectory, ".", sizeof(GamedatDirectory));
 	memset((void *)&ShapesFile, 0, sizeof(ShapesFile));
-	ShapePoolSize = INT32_C(583680);
+	ShapePoolSize = SHAPE_POOL_SIZE;
 	for (i = 0; i < 3; i++) {
 		memset((void *)&ViewBlocks[i], 0, sizeof(ViewBlocks[i]));
 		memset((void *)&ViewBlockCopies[i], 0, sizeof(ViewBlockCopies[i]));
