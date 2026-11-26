@@ -69,7 +69,11 @@ void UC_Interpret(UsecodeRoutine *code, ValueStack *stack, CallStack *calls, cha
 	Value a, b;
 	int16_t n1, n2, n3, n4;
 	int16_t base, nlocals, func, start, nexterns, externs, text, var, i, count, size, nargs;
-	int16_t found, answered, argc, id;
+	int16_t found, argc;
+	/* Set by a conversation's OP_CONVERSE before its cases; 0 until then rather than whatever
+	 * the register or stack slot held, which an optimising compiler changes. id is for a debug
+	 * message. */
+	int16_t answered = 0, id = 0;
 
 	CurrentEvent.id = event;
 	SAVE(item);
