@@ -20,6 +20,18 @@ struct Coord;
 struct CellCoord;
 extern "C" int16_t CompareWorldCoords(Coord *, Coord *);
 
+/* (v + WORLD_SIZE) % WORLD_SIZE, without the divide where it is not needed: almost every v is
+ * within a world's width of the map, and a 68000 has no 32-bit divide (a call into libgcc). Out
+ * there, the same % as before, negative results and all. */
+inline int16_t WrapWorld(int32_t v)
+{
+	int32_t t = v + WORLD_SIZE;
+
+	if (t >= 0 && t < 2 * WORLD_SIZE)
+		return (int16_t) (t >= WORLD_SIZE ? t - WORLD_SIZE : t);
+	return (int16_t) (t % WORLD_SIZE);
+}
+
 /* CompareWorldCoords (coord.c) for the operators below, inline: the item sort calls it thousands
  * of times a frame. */
 inline int16_t WorldDelta(int16_t a, int16_t b)
@@ -37,13 +49,13 @@ inline int16_t WorldDelta(int16_t a, int16_t b)
 struct Coord {
 	int16_t value;
 	Coord() {}
-	Coord(int32_t n) { value = n; value = (value + WORLD_SIZE) % WORLD_SIZE; }
+	Coord(int32_t n) { value = n; value = WrapWorld(value); }
 	Coord &operator=(const Coord &other) { value = other.value; return *this; }
-	Coord &operator=(int32_t n) { value = n; value = (value + WORLD_SIZE) % WORLD_SIZE; return *this; }
+	Coord &operator=(int32_t n) { value = n; value = WrapWorld(value); return *this; }
 	operator int16_t() { return value; }
-	void operator+=(int32_t n) { value += n; value = (value + WORLD_SIZE) % WORLD_SIZE; }
-	void operator-=(int32_t n) { value -= n; value = (value + WORLD_SIZE) % WORLD_SIZE; }
-	void operator++() { value++; value = (value + WORLD_SIZE) % WORLD_SIZE; }
+	void operator+=(int32_t n) { value += n; value = WrapWorld(value); }
+	void operator-=(int32_t n) { value -= n; value = WrapWorld(value); }
+	void operator++() { value++; value = WrapWorld(value); }
 	Coord operator+(int32_t n) { Coord c(value + n); return c; }
 	Coord operator-(int32_t n) { Coord c(value - n); return c; }
 	/* how far this lies past other, the short way round */
@@ -69,7 +81,7 @@ struct Loc {
 
 /* A coord argument: an int wraps in place, a coord or loc is copied. */
 struct CellCoord : Coord {
-	CellCoord(int32_t n) { value = n; value = (value + WORLD_SIZE) % WORLD_SIZE; }
+	CellCoord(int32_t n) { value = n; value = WrapWorld(value); }
 	CellCoord(le_int16 n) : CellCoord((int32_t) (int16_t) n) {}
 	CellCoord(const Coord &c) { value = c.value; }
 	CellCoord(const Loc &l) { value = l.value; }
@@ -82,7 +94,7 @@ inline int8_t Coord::operator>(CellCoord other) { return WorldDelta(value, other
 inline int8_t Coord::operator>=(CellCoord other) { return WorldDelta(value, other.value) >= 0; }
 
 /* A world coordinate wrapped into 0..3071. */
-inline int16_t WrapCoord(int16_t v) { v = (v + WORLD_SIZE) % WORLD_SIZE; return v; }
+inline int16_t WrapCoord(int16_t v) { v = WrapWorld(v); return v; }
 
 /* The sign and size of a step. */
 inline int16_t GetSign(int16_t d) { if (d == 0) return 0; if (d < 0) return -1; return 1; }
