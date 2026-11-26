@@ -5,7 +5,9 @@
 #include "makemojo.h"
 #include "itemrec.h"
 
-/* A table of 1024 words in voodoo memory, one per type, with a checksum to catch stray writes. */
+/* A table of 1024 words in voodoo memory, one per type, with a checksum to catch stray writes.
+ * U7_NO_STRAY_WRITE_CHECKS (a slow machine's build) leaves the sum alone after each write: only
+ * VerifyShapeLookups reads it, and nothing calls that. */
 struct ShapeLookup {
 	int8_t tag;
 	int32_t addr;
@@ -22,7 +24,9 @@ struct ShapeLookup {
 	{
 		CheckMojoBounds(INT32_C(1024), (uint32_t) type);
 		PokeWord(addr + type * 2, n);
+#ifndef U7_NO_STRAY_WRITE_CHECKS
 		computeChecksum();
+#endif
 	}
 };
 

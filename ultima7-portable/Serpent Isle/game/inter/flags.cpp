@@ -110,9 +110,13 @@ char *GameFlagSet::name()
 	return FlagInitFileName;
 }
 
+/* U7_NO_STRAY_WRITE_CHECKS (a slow machine's build) does without the check against stray writes
+ * that re-sums every flag at every read and write: it only ever finds memory gone bad. */
 uint8_t GameFlagSet::get(int16_t flag)
 {
+#ifndef U7_NO_STRAY_WRITE_CHECKS
 	verify(0);
+#endif
 	if (count < flag)
 		ReportError(0x6d02);
 	return (bits[flag / 8] & (0x80 >> (flag & 7))) != 0;
@@ -125,7 +129,9 @@ void GameFlagSet::set(int16_t flag, int8_t on)
 			bits[flag >> 3] |= 0x80 >> (flag & 7);
 		else
 			bits[flag >> 3] &= ~(0x80 >> (flag & 7));
+#ifndef U7_NO_STRAY_WRITE_CHECKS
 		checksum();
+#endif
 	}
 }
 
