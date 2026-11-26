@@ -3,6 +3,7 @@
  */
 
 #include "u7port.h"
+#include "shapedraw.h"
 #include "byteorder.h"
 #include "objref.h"
 #include "lowlevel.h"
@@ -486,8 +487,10 @@ void WorldView::paint()
 	ItemRenderOrder.build(Coord((int16_t)centerX - VIEW_HALF_WIDTH), Coord((int16_t)centerY - VIEW_HALF_HEIGHT),
 		Coord((int16_t)centerX + 29), Coord((int16_t)centerY + 22), CeilingZ, 0);
 	paintTerrain(0, 0, 39, 24);
+	SHAPE_SPANS_ASYNC(1);
 	for (current = ItemRenderOrder.last(); current.valid(); current = ItemRenderOrder.previous())
 		paintItem(current.off);
+	SHAPE_SPANS_ASYNC(0);
 	if (InfravisionEnabled)
 		LightTotal += 750;
 	PlayAmbientSounds();

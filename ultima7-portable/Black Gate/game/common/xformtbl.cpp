@@ -8,6 +8,7 @@
 #include "vooalloc.h"
 #include "flex.h"
 #include "oops.h"
+#include "shapedraw.h"
 
 void MoveBufferToVoodoo(int32_u *block, void *buffer, int16_t size);
 
@@ -53,6 +54,7 @@ void MoveBufferToVoodoo(int32_u *block, void *buffer, int16_t size)
 
 void SetXformEntries(int32_u *table, uint8_t *indices, int8_t value)
 {
+	SHAPE_SPANS_FINISH();
 	for (; *indices != 255; indices++)
 		PokeByte(*table + *indices, value);
 }

@@ -3,6 +3,7 @@
  */
 
 #include "u7port.h"
+#include "shapedraw.h"
 #include "byteorder.h"
 #include "objref.h"
 #include "lowlevel.h"
@@ -474,8 +475,10 @@ void WorldView::paint()
 	if (AvatarDontMove)
 		PlaceItemOffMap(&AvatarRef);
 	paintTerrain(0, 0, 39, 24);
+	SHAPE_SPANS_ASYNC(1);
 	for (current = ItemRenderOrder.last(); current.valid(); current = ItemRenderOrder.previous())
 		paintItem(current.off);
+	SHAPE_SPANS_ASYNC(0);
 	PlayAmbientSounds();
 	DrawTranslation = 0;
 	LightTotal >>= 5;

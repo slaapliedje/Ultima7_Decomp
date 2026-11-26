@@ -4,6 +4,7 @@
  */
 
 #include "u7port.h"
+#include "shapedraw.h"
 #include <new>
 #include "lowlevel.h"
 #include "dosio.h"
@@ -79,6 +80,7 @@ void TrimShapeFrames(CacheEntry *entry)
 {
 	int16_t n;
 
+	SHAPE_SPANS_FINISH();
 	entry->size = PackShapeFrames(entry->address, FrameFlagTable.data + ((int32_t) entry->id << 2));
 	n = entry->id;
 	TrimmedShapeBits[n >> 3] |= 1 << (n & 7);

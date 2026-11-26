@@ -15,6 +15,7 @@
 #include "oops.h"
 #include "memapi.h"
 #include "rescache.h"
+#include "shapedraw.h"
 
 class CacheManager {
 	RecordCache *owner;
@@ -414,6 +415,7 @@ CacheEntry * Cache_allocate(RecordCache *cache, uint32_t size, int16_t id)
 	CacheEntry *freed;
 	CacheEntry *entry;
 
+	SHAPE_SPANS_FINISH();
 	if (IsWholeCache(size))
 		size = cache->capacity - 1;
 	else if (size < 0 || size > cache->capacity)

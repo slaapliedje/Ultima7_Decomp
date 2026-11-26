@@ -173,6 +173,13 @@ extern "C" void shape_spans_copy(const uint8_t *source, int32_t x, int32_t y, co
 	const uint8_t *rowTable, uint8_t *linearBase);
 #endif
 
+#ifdef U7_SHAPE_SPANS_BACKEND
+/* A backend that draws every mode itself (the Jaguar's GPU): mode a ShapePixelMode, table as
+ * DrawSpans has it. */
+extern "C" void shape_spans_draw(const uint8_t *source, int32_t x, int32_t y, const int16_t clip[4],
+	const uint8_t *rowTable, uint8_t *linearBase, int32_t mode, int32_t flipped, const uint8_t *table);
+#endif
+
 void DrawShapeFrame(struct View *view, int16_t x, int16_t y, int32_t shape, int16_t frameNum,
 	bool flipped, enum ShapePixelMode mode, int32_t table)
 {
@@ -183,6 +190,10 @@ void DrawShapeFrame(struct View *view, int16_t x, int16_t y, int32_t shape, int1
 	if (LinearGet16(shape + SHAPE_FIRST_FRAME) < entry)
 		return;
 	source = LINEAR(shape + (int32_t)LinearGet32(shape + entry) + FRAME_HEADER_SIZE);
+#ifdef U7_SHAPE_SPANS_BACKEND
+	shape_spans_draw(source, x, y, &view->clip.x0, LINEAR(view->rowTable), LinearBase, mode, flipped, tableBytes);
+	return;
+#endif
 	switch (mode) {
 	case SHAPE_COPY:
 		if (flipped)

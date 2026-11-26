@@ -9,6 +9,7 @@
 #include "flex.h"
 #include "oops.h"
 #include "xformtbl.h"
+#include "shapedraw.h"
 
 /* Load count 256-byte records from a flex into far memory, then blanks empty ones, after a 256-byte
  * table that maps 254 - i to record i + 1. */
@@ -52,6 +53,7 @@ void MoveBufferToVoodoo(int32_u *block, void *buffer, int16_t size)
 
 void SetXformEntries(int32_u *table, uint8_t *indices, int8_t value)
 {
+	SHAPE_SPANS_FINISH();
 	for (; *indices != 255; indices++)
 		PokeByte(*table + *indices, value);
 }
