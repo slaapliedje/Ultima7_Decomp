@@ -18,6 +18,17 @@
 #include "rescache.h"
 #include "shapedraw.h"
 
+/* U7_CACHE_ALIGN: every entry starts on an 8-byte boundary and is charged its size rounded up to
+ * one, as are the cache's ends, so the moves of compaction keep a phrase's alignment and the
+ * Jaguar's blitter can make them (platform/jaguar/blit.c). Without it nothing changes. */
+#ifdef U7_CACHE_ALIGN
+#define CACHE_UP(n) (((n) + 7) & ~(uint32_t) 7)
+#define CACHE_DOWN(n) ((n) & ~(uint32_t) 7)
+#else
+#define CACHE_UP(n) (n)
+#define CACHE_DOWN(n) (n)
+#endif
+
 class CacheManager {
 	RecordCache *owner;
 public:
@@ -172,7 +183,7 @@ void Cache_checkRing(RecordCache *cache, char *where)
 		Cache_reportError(cache, 0xa00e, where);
 	while (entry->newer != cache->mru) {
 		count++;
-		total += entry->size;
+		total += CACHE_UP(entry->size);
 		if (entry->address < cache->first->address || entry->address + entry->size > cache->end)
 			Cache_reportError(cache, 0xa00a, where);
 		entry = entry->newer;
@@ -193,7 +204,7 @@ void Cache_check(RecordCache *cache, char *where)
 	total = 0;
 	while (entry != 0) {
 		count++;
-		total += entry->size;
+		total += CACHE_UP(entry->size);
 		entry = entry->next;
 		if (entry != 0) {
 			if (entry->previous->next != entry)
@@ -216,7 +227,7 @@ void Cache_check(RecordCache *cache, char *where)
 		Cache_reportError(cache, 0xa00e, where);
 	while (entry->newer != cache->mru) {
 		count++;
-		total += entry->size;
+		total += CACHE_UP(entry->size);
 		entry = entry->newer;
 		if (entry == 0)
 			Cache_reportError(cache, 0xa00b, where);
@@ -250,12 +261,13 @@ void Cache_initialize(RecordCache *cache, CacheManager *manager, uint32_t capaci
 	cache->count = 0;
 	cache->used = 0;
 	start->clear();
-	start->address = cache->allocation;
+	start->address = CACHE_UP(cache->allocation);
 	start->next = end;
 	start->older = end;
 	start->newer = end;
 	end->clear();
-	end->address = cache->end = cache->allocation + cache->capacity;
+	end->address = cache->end = CACHE_DOWN(cache->allocation + cache->capacity);
+	cache->capacity = cache->end - start->address;
 	end->previous = start;
 	end->older = start;
 	end->newer = start;
@@ -293,10 +305,10 @@ uint32_t Cache_evictOldest(RecordCache *cache, uint32_t needed, CacheEntry **gap
 			Cache_reportError(cache, 0xa024, 0);
 		cache->firstGap = previous;
 	}
-	cache->charge(-entry->size);
+	cache->charge(-(int32_t) CACHE_UP(entry->size));
 	cache->count--;
 	cache->pool.giveBack(&entry);
-	if (previous->next->address - (previous->address + previous->size) > needed)
+	if (previous->next->address - CACHE_UP(previous->address + previous->size) > needed)
 		*gap = previous;
 	Cache_check(cache, "F");
 	return freed;
@@ -345,11 +357,11 @@ CacheEntry * Cache_compact(RecordCache *cache, uint32_t needed)
 		if (entry == cache->mru->older) {
 			gap = entry->previous;
 			Cache_reportFormatted(cache, "Garbage %d needs %ld, has %ld", count, needed,
-				gap->next->address - (gap->address + gap->size));
+				gap->next->address - CACHE_UP(gap->address + gap->size));
 		}
-		MoveLinearFlat(before->address + before->size, entry->address, entry->size);
-		entry->address = before->address + before->size;
-		enough = entry->next->address - (entry->address + entry->size) >= needed;
+		MoveLinearFlat(CACHE_UP(before->address + before->size), entry->address, entry->size);
+		entry->address = CACHE_UP(before->address + before->size);
+		enough = entry->next->address - CACHE_UP(entry->address + entry->size) >= needed;
 	}
 	cache->firstGap = 0;
 	Cache_check(cache, "G");
@@ -359,7 +371,7 @@ CacheEntry * Cache_compact(RecordCache *cache, uint32_t needed)
 CacheEntry * Cache_findGap(RecordCache *cache, uint32_t needed, uint32_t *available)
 {
 	CacheEntry *entry = cache->first;
-	uint32_t end = entry->address + entry->size;
+	uint32_t end = CACHE_UP(entry->address + entry->size);
 	uint32_t next;
 
 	for (;;) {
@@ -370,7 +382,7 @@ CacheEntry * Cache_findGap(RecordCache *cache, uint32_t needed, uint32_t *availa
 		if (next >= cache->end)
 			return 0;
 		entry = entry->next;
-		end = next + entry->size;
+		end = CACHE_UP(next + entry->size);
 	}
 }
 
@@ -383,6 +395,7 @@ uint32_t ShrinkCache(RecordCache *cache, int32_t amount)
 		Cache_compact(cache, cache->capacity - cache->used);
 		Cache_checkRing(cache, "Post-garbage-collect");
 	}
+	amount = CACHE_UP(amount);
 	cache->mru->older->address -= amount;
 	cache->end -= amount;
 	cache->capacity -= amount;
@@ -434,7 +447,7 @@ CacheEntry * Cache_allocate(RecordCache *cache, uint32_t size, int16_t id)
 	}
 	Cache_check(cache, "A1");
 	entry = cache->pool.take();
-	entry->address = gap->address + gap->size;
+	entry->address = CACHE_UP(gap->address + gap->size);
 	entry->size = size;
 	entry->id = id;
 	entry->next = gap->next;
@@ -447,7 +460,7 @@ CacheEntry * Cache_allocate(RecordCache *cache, uint32_t size, int16_t id)
 	cache->mru->newer->older = entry;
 	cache->mru->newer = entry;
 	Cache_checkRing(cache, "A3");
-	cache->charge(size);
+	cache->charge(CACHE_UP(size));
 	cache->count++;
 	if (!entry->released())
 		cache->manager->loaded(id, entry);
