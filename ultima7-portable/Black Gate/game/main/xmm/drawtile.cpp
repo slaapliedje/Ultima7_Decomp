@@ -35,7 +35,8 @@ void DrawTile(int32_t tile, int16_t x, int16_t y)
  * there, and the picture is then copied into the viewport, cut where it wraps: that costs less
  * than drawing every tile into the viewport every frame. */
 #define TERRAIN_LINES 200
-static uint8_t TerrainPixels[SCREEN_WIDTH * TERRAIN_LINES];
+/* On a phrase boundary, as the screen is, so a blitter can copy its rows (platform/jaguar/blit.c). */
+static uint8_t TerrainPixels[SCREEN_WIDTH * TERRAIN_LINES] __attribute__((aligned(8)));
 
 /* Puts an 8x8 tile into the terrain picture at its tile column x and tile row y. */
 void DrawTerrainTile(int32_t tile, int16_t x, int16_t y)
@@ -68,6 +69,14 @@ void KeepTerrainTile(int16_t x, int16_t y, int16_t column, int16_t row)
 
 /* Copies the terrain picture into the viewport, the picture's tile column column and row row at
  * the viewport's top left. */
+#ifdef U7_PLAT_COPY_RECT
+/* A backend's rectangle copy between two buffers SCREEN_WIDTH wide (the Jaguar's blitter): w by h
+ * pixels from x, y in src to x, y in dst, every x and w a multiple of 8. False when it cannot
+ * (the buffers not on a phrase boundary), before it has copied anything. */
+extern "C" bool plat_copy_rect(uint8_t *dst, int16_t dx, int16_t dy, const uint8_t *src, int16_t sx,
+	int16_t sy, int16_t w, int16_t h);
+#endif
+
 void ShowTerrain(int16_t column, int16_t row)
 {
 	uint8_t *dst = LINEAR(ViewportFirstRow);
@@ -75,6 +84,24 @@ void ShowTerrain(int16_t column, int16_t row)
 	const uint8_t *src = TerrainPixels + TileRowOffsets[(uint16_t)row];
 	const uint8_t *end = TerrainPixels + sizeof TerrainPixels;
 	int16_t line;
+
+#ifdef U7_PLAT_COPY_RECT
+	/* as four rectangles, cut where the picture wraps */
+	{
+		int16_t top = (int16_t)((uint16_t)row * 8), below = TERRAIN_LINES - top;
+
+		if (plat_copy_rect(dst, 0, 0, TerrainPixels, (int16_t)left, top, (int16_t)right, below)) {
+			if (left != 0)
+				plat_copy_rect(dst, (int16_t)right, 0, TerrainPixels, 0, top, (int16_t)left, below);
+			if (top != 0) {
+				plat_copy_rect(dst, 0, below, TerrainPixels, (int16_t)left, 0, (int16_t)right, top);
+				if (left != 0)
+					plat_copy_rect(dst, (int16_t)right, below, TerrainPixels, 0, 0, (int16_t)left, top);
+			}
+			return;
+		}
+	}
+#endif
 
 	for (line = 0; line < TERRAIN_LINES; line++) {
 		memcpy(dst, src + left, right);

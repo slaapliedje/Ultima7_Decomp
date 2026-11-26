@@ -36,11 +36,11 @@ extern uint32_t ExtendedArea, ExtendedAreaSize;
 
 #define LINEAR(address) (LinearBase + (uint32_t)(address))
 
-static inline uint8_t LinearGet8(int32_t a) { return LINEAR(a)[0]; }
-static inline uint16_t LinearGet16(int32_t a) { return LoadLE16(LINEAR(a)); }
-static inline uint32_t LinearGet32(int32_t a) { return LoadLE32(LINEAR(a)); }
-static inline void LinearPut8(int32_t a, uint8_t v) { LINEAR(a)[0] = v; }
-static inline void LinearPut16(int32_t a, uint16_t v) { StoreLE16(LINEAR(a), v); }
-static inline void LinearPut32(int32_t a, uint32_t v) { StoreLE32(LINEAR(a), v); }
+U7_ALWAYS_INLINE uint8_t LinearGet8(int32_t a) { return LINEAR(a)[0]; }
+U7_ALWAYS_INLINE uint16_t LinearGet16(int32_t a) { return LoadLE16(LINEAR(a)); }
+U7_ALWAYS_INLINE uint32_t LinearGet32(int32_t a) { return LoadLE32(LINEAR(a)); }
+U7_ALWAYS_INLINE void LinearPut8(int32_t a, uint8_t v) { LINEAR(a)[0] = v; }
+U7_ALWAYS_INLINE void LinearPut16(int32_t a, uint16_t v) { StoreLE16(LINEAR(a), v); }
+U7_ALWAYS_INLINE void LinearPut32(int32_t a, uint32_t v) { StoreLE32(LINEAR(a), v); }
 
 #endif

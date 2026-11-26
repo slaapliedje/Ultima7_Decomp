@@ -15,48 +15,101 @@
 #define U7_BIG_ENDIAN 0
 #endif
 
-static inline uint16_t SwapBytes16(uint16_t v)
+/* For the small helpers here and in arena.h, used everywhere: GCC optimising for size would
+ * otherwise call them, and the call costs more than their few instructions. */
+#define U7_ALWAYS_INLINE static inline __attribute__((always_inline))
+
+U7_ALWAYS_INLINE uint16_t SwapBytes16(uint16_t v)
 {
 	return (uint16_t) (v << 8 | v >> 8);
 }
 
-static inline uint32_t SwapBytes32(uint32_t v)
+U7_ALWAYS_INLINE uint32_t SwapBytes32(uint32_t v)
 {
 	return v << 24 | (v & 0xff00) << 8 | (v >> 8 & 0xff00) | v >> 24;
 }
 
 /* Little-endian to host order, or host to little-endian: the same swap either way. */
-static inline uint16_t LE16(uint16_t v) { return U7_BIG_ENDIAN ? SwapBytes16(v) : v; }
-static inline uint32_t LE32(uint32_t v) { return U7_BIG_ENDIAN ? SwapBytes32(v) : v; }
+U7_ALWAYS_INLINE uint16_t LE16(uint16_t v) { return U7_BIG_ENDIAN ? SwapBytes16(v) : v; }
+U7_ALWAYS_INLINE uint32_t LE32(uint32_t v) { return U7_BIG_ENDIAN ? SwapBytes32(v) : v; }
 
 /* Little-endian values at any address. memcpy lets a compiler that knows the host reads
- * unaligned words do one load or store and a byte swap. */
-static inline uint16_t LoadLE16(const void *p)
+ * unaligned words do one load or store and a byte swap. A plain 68000 cannot, and GCC calls
+ * memcpy for it there; it can at any even address, so a value at one is moved whole, and one at
+ * an odd address a byte at a time. */
+#if defined(__mc68000__) && !defined(__mc68020__) && !defined(__mc68030__) && \
+	!defined(__mc68040__) && !defined(__mc68060__) && !defined(__mcoldfire__)
+#define U7_EVEN_ALIGNED 1
+typedef uint16_t __attribute__((may_alias)) u7_alias16;
+typedef uint32_t __attribute__((may_alias)) u7_alias32;
+#endif
+
+U7_ALWAYS_INLINE uint16_t LoadLE16(const void *p)
 {
+#ifdef U7_EVEN_ALIGNED
+	const uint8_t *b = (const uint8_t *) p;
+
+	if (((uintptr_t) p & 1) == 0)
+		return SwapBytes16(*(const u7_alias16 *) p);
+	return (uint16_t) (b[0] | b[1] << 8);
+#else
 	uint16_t v;
 
 	memcpy(&v, p, sizeof v);
 	return LE16(v);
+#endif
 }
 
-static inline uint32_t LoadLE32(const void *p)
+U7_ALWAYS_INLINE uint32_t LoadLE32(const void *p)
 {
+#ifdef U7_EVEN_ALIGNED
+	const uint8_t *b = (const uint8_t *) p;
+
+	if (((uintptr_t) p & 1) == 0)
+		return SwapBytes32(*(const u7_alias32 *) p);
+	return (uint32_t) b[0] | (uint32_t) b[1] << 8 | (uint32_t) b[2] << 16 | (uint32_t) b[3] << 24;
+#else
 	uint32_t v;
 
 	memcpy(&v, p, sizeof v);
 	return LE32(v);
+#endif
 }
 
-static inline void StoreLE16(void *p, uint16_t v)
+U7_ALWAYS_INLINE void StoreLE16(void *p, uint16_t v)
 {
+#ifdef U7_EVEN_ALIGNED
+	uint8_t *b = (uint8_t *) p;
+
+	if (((uintptr_t) p & 1) == 0) {
+		*(u7_alias16 *) p = SwapBytes16(v);
+		return;
+	}
+	b[0] = (uint8_t) v;
+	b[1] = (uint8_t) (v >> 8);
+#else
 	v = LE16(v);
 	memcpy(p, &v, sizeof v);
+#endif
 }
 
-static inline void StoreLE32(void *p, uint32_t v)
+U7_ALWAYS_INLINE void StoreLE32(void *p, uint32_t v)
 {
+#ifdef U7_EVEN_ALIGNED
+	uint8_t *b = (uint8_t *) p;
+
+	if (((uintptr_t) p & 1) == 0) {
+		*(u7_alias32 *) p = SwapBytes32(v);
+		return;
+	}
+	b[0] = (uint8_t) v;
+	b[1] = (uint8_t) (v >> 8);
+	b[2] = (uint8_t) (v >> 16);
+	b[3] = (uint8_t) (v >> 24);
+#else
 	v = LE32(v);
 	memcpy(p, &v, sizeof v);
+#endif
 }
 
 static inline uint32_t SwapLESized(uint32_t v, size_t size)
